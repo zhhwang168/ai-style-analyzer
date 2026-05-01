@@ -13,14 +13,45 @@
 | 地区 / Region | 链接 / Link |
 |--------------|------------|
 | 🌍 Global (Vercel) | [https://analyzer-amber-eta.vercel.app/](https://analyzer-amber-eta.vercel.app/) |
-| 🇨🇳 中国大陆 (腾讯云 EdgeOne) | [https://ai-style-analyzer-w7kz4og3tv.edgeone.dev/](https://ai-style-analyzer-w7kz4og3tv.edgeone.dev/) |
+| 🇨🇳 中国大陆 (腾讯云 EdgeOne) | [https://ai-style-analyzer.edgeone.dev/](https://ai-style-analyzer.edgeone.dev/) |
 
-![AI Style Analyzer](https://img.shields.io/badge/Status-Live-brightgreen?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.2.0-purple?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Live-brightgreen?style=flat-square)
 ![Free](https://img.shields.io/badge/Free-No%20API%20Key%20Needed-blue?style=flat-square)
 ![Built with React](https://img.shields.io/badge/Built%20with-React%20%2B%20Vite-61dafb?style=flat-square&logo=react)
 ![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=flat-square&logo=vercel)
 ![EdgeOne](https://img.shields.io/badge/Mirror-Tencent%20EdgeOne-1a6cf5?style=flat-square)
 ![Languages](https://img.shields.io/badge/Languages-EN%20%7C%20中文%20%7C%20日本語-orange?style=flat-square)
+
+---
+
+## 🖼️ Sample Output / 效果展示 / サンプル出力
+
+> 以下是使用本工具生成 Prompt 后，在 ChatGPT 中得到的实际报告效果 👇
+> Below are real report outputs generated via ChatGPT using this tool's prompts.
+
+### 💇 Hairstyle Analysis Report / 发型分析报告
+![Hairstyle Analysis Sample](./screenshots/hairstyle-sample.png)
+> *Face shape detected → Recommended & avoid hairstyles with suitability ratings*
+
+### 🎨 Personal Color Analysis Report / 个人色彩分析报告
+![Color Analysis Sample](./screenshots/color-sample.png)
+> *Seasonal color type → Best & avoid colors with hex codes*
+
+### 🔬 Facial Feature Analysis Report / 面部特征分析报告
+![Facial Analysis Sample](./screenshots/facial-sample.png)
+> *Anthropometric measurements → Proportion index & face shape diagram*
+
+### 👗 Outfit Style Report / 穿搭风格报告
+![Outfit Sample](./screenshots/outfit-sample.png)
+> *Style archetype → Key pieces assessment & upgrade suggestions*
+
+### 💍 Accessory Guide / 配饰搭配指南
+![Accessory Sample](./screenshots/accessory-sample.png)
+> *Face shape & outfit matching → Recommended jewelry & accessories*
+
+> 💡 **Tip:** Upload your own photo to get a fully personalized report!
+> 💡 **提示：** 上传你自己的照片，即可获得完全个性化的分析报告！
 
 ---
 
@@ -67,6 +98,27 @@
 | 6 | ✨ Aesthetics Report | 面部美学报告 | 顔の美学レポート | Golden ratio & enhancement suggestions |
 | 7 | 👗 Outfit Style Guide | 穿搭风格指南 | コーデスタイルガイド | Clothing & personal style suggestions |
 | 8 | 💍 Accessory Guide | 配饰搭配指南 | アクセサリーガイド | Jewelry & accessory pairing |
+
+---
+
+## 📋 Changelog / 更新日志 / 更新履歴
+
+### v1.2.0 — 2026-05-02
+- 🌐 Added 3-language support (EN / 中文 / 日本語)
+- ➕ Added Outfit Style Guide & Accessory Guide (8 types total)
+- 🎨 Upgraded UI to glassmorphism dark theme
+- 🇨🇳 Added China mirror via Tencent EdgeOne
+
+### v1.1.0 — 2026-05-01
+- ✅ Multi-select analysis types
+- ✨ Style Vibe Selector added
+- 📊 Live visitor counter integrated
+- 🚀 Deployed to Vercel
+
+### v1.0.0 — 2026-05-01
+- 🎉 Initial release
+- 4 core analysis types
+- Basic prompt generation
 
 ---
 
@@ -136,9 +188,15 @@ npm run build
 ├── index.html
 ├── package.json
 ├── vite.config.js
+├── screenshots/              ← Sample output images
+│   ├── hairstyle-sample.png
+│   ├── color-sample.png
+│   ├── facial-sample.png
+│   ├── outfit-sample.png
+│   └── accessory-sample.png
 └── src/
     ├── main.jsx
-    └── App.jsx        ← Main application component
+    └── App.jsx               ← Main application component
 ```
 
 ---
