@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 
-// ════════════════════════════════
-// 多语言文字配置
-// ════════════════════════════════
 const LANGS = {
   en: {
     headerSub: "Upload · Select · Copy Prompt · Send to ChatGPT",
@@ -40,6 +37,16 @@ const LANGS = {
     adTitle: "📢 Advertise Here",
     adSub: "Reach AI & fashion enthusiasts ·",
     vibes: ["More Dashing", "More Elegant", "More Youthful", "More Sophisticated", "More Cute", "More Edgy"],
+    // Visual prompt labels
+    visualPromptLabel: "🎨 Bonus: Visual Makeover Prompt",
+    visualPromptSub: "Paste this into ChatGPT to generate a visual before/after image!",
+    outfitColorLabel: "👗 Outfit Color Options",
+    outfitColorSub: "Select colors to include in the visual prompt",
+    layoutLabel: "🖼️ Visual Layout Style",
+    layoutSide: "Side by Side (Before / After)",
+    layoutGrid: "3-Panel Grid (Original + 2 Looks)",
+    layoutSingle: "Single Makeover Image",
+    colors: ["Black", "White", "Navy", "Beige", "Burgundy", "Forest Green", "Camel", "Grey", "Dusty Rose", "Cobalt Blue"],
   },
   zh: {
     headerSub: "上传 · 选择 · 复制提示词 · 发送给 ChatGPT",
@@ -77,6 +84,15 @@ const LANGS = {
     adTitle: "📢 广告招租",
     adSub: "触达 AI 与时尚爱好者 ·",
     vibes: ["更帅气", "更优雅", "更年轻", "更成熟", "更可爱", "更个性"],
+    visualPromptLabel: "🎨 加餐：效果图生成提示词",
+    visualPromptSub: "将此提示词发给 ChatGPT，即可生成穿搭前后对比效果图！",
+    outfitColorLabel: "👗 服装颜色选项",
+    outfitColorSub: "选择要在效果图中展示的颜色",
+    layoutLabel: "🖼️ 效果图排版样式",
+    layoutSide: "左右对比（改造前 / 改造后）",
+    layoutGrid: "三格展示（原图 + 2种造型）",
+    layoutSingle: "单图改造效果",
+    colors: ["黑色", "白色", "藏青色", "米色", "酒红色", "墨绿色", "驼色", "灰色", "藕粉色", "宝蓝色"],
   },
   ja: {
     headerSub: "アップロード · 選択 · プロンプトをコピー · ChatGPTへ送信",
@@ -114,12 +130,21 @@ const LANGS = {
     adTitle: "📢 広告掲載募集",
     adSub: "AI・ファッション愛好家にリーチ ·",
     vibes: ["よりダッシング", "よりエレガント", "より若々しく", "よりソフィスティケート", "よりキュート", "よりエッジー"],
+    visualPromptLabel: "🎨 ボーナス：ビジュアルメイクオーバープロンプト",
+    visualPromptSub: "このプロンプトをChatGPTに貼り付けて、ビジュアルビフォーアフター画像を生成！",
+    outfitColorLabel: "👗 コーデカラーオプション",
+    outfitColorSub: "ビジュアルに含める色を選択",
+    layoutLabel: "🖼️ ビジュアルレイアウトスタイル",
+    layoutSide: "左右比較（ビフォー / アフター）",
+    layoutGrid: "3パネルグリッド（元画像 + 2スタイル）",
+    layoutSingle: "シングルメイクオーバー画像",
+    colors: ["ブラック", "ホワイト", "ネイビー", "ベージュ", "バーガンディ", "フォレストグリーン", "キャメル", "グレー", "ダスティローズ", "コバルトブルー"],
   },
 };
 
-// ════════════════════════════════
-// 分析类型（名称三语 + Prompt英文）
-// ════════════════════════════════
+// ── Visual-prompt capable types ──
+const VISUAL_TYPES = ["hairstyle", "outfit", "accessory", "color"];
+
 const getAnalysisTypes = (lang) => [
   {
     id: "face",
@@ -158,20 +183,17 @@ Generate a professional Personal Color Report in a HORIZONTAL 16:9 landscape lay
 
 Subject name: ${name}${vibe ? `\nStyle vibe: ${vibe}` : ""}
 
-LEFT SECTION (55%): Full color portrait. Overlay color swatches and tone labels:
-- Color swatches near skin, hair, and eye areas
-- Undertone labels (warm/cool/neutral)
-- Season type badge (Spring / Summer / Autumn / Winter)
+LEFT SECTION (55%): Full color portrait. Overlay color swatches and tone labels near skin, hair, and eye areas. Include undertone labels (warm/cool/neutral) and season type badge.
 
 RIGHT SECTION (45%): White/light gray background.
 HEADER: "PERSONAL COLOR ANALYSIS REPORT" / "SEASONAL COLOR PROFILING"
 BEST COLORS: 6 recommended clothing colors with hex codes
 AVOID COLORS: 3 colors to avoid with reason
 DIAGRAM: Color palette grid — 6 best + 3 avoid
-NOTES: Natural light photo · Undertone detected · Season identified
 SUMMARY: 2–3 sentence professional summary for ${name}.
 
 RULES: ✅ Full color · ✅ Annotations on photo · ✅ Identity unaltered · ✗ No grayscale · ✗ No watermarks`,
+    visualPrompt: (name, vibe, colors, layout) => buildVisualPrompt("color", name, vibe, colors, layout),
   },
   {
     id: "glasses",
@@ -184,17 +206,13 @@ Generate a professional Spectacles Recommendation Report in a HORIZONTAL 16:9 la
 
 Subject name: ${name}${vibe ? `\nStyle vibe: ${vibe}` : ""}
 
-LEFT SECTION (55%): Full color portrait. Overlay face shape guides:
-- Dashed outline tracing face shape
-- Width and length ratio lines
-- Frame icons near eye area showing best match
+LEFT SECTION (55%): Full color portrait. Overlay face shape guides, dashed outline, width/length ratio lines, and frame icons near eye area.
 
 RIGHT SECTION (45%): White/light gray background.
 HEADER: "SPECTACLES GUIDE" / "FACE SHAPE & FRAME MATCHING"
 RECOMMENDED FRAMES: Round / Rectangular / Aviator / Cat-eye / Rimless / Bold — with suitability scores
 FRAMES TO AVOID: Styles that clash with face shape + reason
 DIAGRAM: Grid of 6 frame style icons
-NOTES: Based on frontal proportions · Face shape detected · Style guidelines only
 SUMMARY: 2–3 sentence professional summary for ${name}.
 
 RULES: ✅ Full color · ✅ Annotations on photo · ✅ Identity unaltered · ✗ No grayscale · ✗ No watermarks`,
@@ -210,20 +228,17 @@ Generate a professional Hairstyle Report in a HORIZONTAL 16:9 landscape layout.
 
 Subject name: ${name}${vibe ? `\nStyle vibe: ${vibe}` : ""}
 
-LEFT SECTION (55%): Full color portrait. Overlay contour guides:
-- Forehead width measurement line
-- Jawline contour outline
-- Face length-to-width ratio indicator
+LEFT SECTION (55%): Full color portrait. Overlay forehead width line, jawline contour, face length-to-width ratio indicator.
 
 RIGHT SECTION (45%): White/light gray background.
 HEADER: "HAIRSTYLE ANALYSIS REPORT" / "FACE SHAPE & STYLE MATCHING"
 RECOMMENDED HAIRSTYLES: 6 styles with suitability rating and reason
 STYLES TO AVOID: 3 styles that don't suit the face shape + reason
 DIAGRAM: Hairstyle silhouette icons grid
-NOTES: Face shape analysis · Hair texture not assessed · Style suggestions only
 SUMMARY: 2–3 sentence professional summary for ${name}.
 
 RULES: ✅ Full color · ✅ Annotations on photo · ✅ Identity unaltered · ✗ No grayscale · ✗ No watermarks`,
+    visualPrompt: (name, vibe, colors, layout) => buildVisualPrompt("hairstyle", name, vibe, colors, layout),
   },
   {
     id: "physique",
@@ -236,10 +251,7 @@ Generate a professional Physique Report in a HORIZONTAL 16:9 landscape layout.
 
 Subject name: ${name}${vibe ? `\nStyle vibe: ${vibe}` : ""}
 
-LEFT SECTION (55%): Full color portrait. Overlay body measurement lines:
-- Shoulder width, waist, hip measurement lines
-- Muscle group labels (shoulders, core, arms, legs)
-- Body type badge (Ectomorph / Mesomorph / Endomorph)
+LEFT SECTION (55%): Full color portrait. Overlay shoulder width, waist, hip measurement lines, muscle group labels, and body type badge.
 
 RIGHT SECTION (45%): White/light gray background.
 HEADER: "PHYSIQUE ANALYSIS REPORT" / "BODY COMPOSITION ASSESSMENT"
@@ -262,17 +274,13 @@ Generate a professional Facial Aesthetics Report in a HORIZONTAL 16:9 landscape 
 
 Subject name: ${name}${vibe ? `\nStyle vibe: ${vibe}` : ""}
 
-LEFT SECTION (55%): Full color portrait. Overlay suggestion arrows:
-- Arrows to hairline, brow, skin, expression areas
-- Callout labels with improvement suggestions
-- Golden ratio overlay lines on facial thirds
+LEFT SECTION (55%): Full color portrait. Overlay suggestion arrows to hairline, brow, skin, expression areas with callout labels. Add golden ratio overlay lines on facial thirds.
 
 RIGHT SECTION (45%): White/light gray background.
 HEADER: "FACIAL AESTHETICS REPORT" / "ENHANCEMENT SUGGESTION ANALYSIS"
 ENHANCEMENT: Hairline / Brow Shape / Skin Quality / Eye Area / Lip Balance / Jaw Definition
 HARMONY SCORES: Facial Symmetry · Golden Ratio Match · Feature Balance
 DIAGRAM: Golden ratio facial thirds diagram
-NOTES: Visual estimates only · Not medical advice · 2D frontal image
 SUMMARY: 2–3 sentence professional summary for ${name}.
 
 RULES: ✅ Full color · ✅ Annotations on photo · ✅ Identity unaltered · ✗ No grayscale · ✗ No watermarks`,
@@ -288,20 +296,17 @@ Generate a professional Outfit Style Report in a HORIZONTAL 16:9 landscape layou
 
 Subject name: ${name}${vibe ? `\nStyle vibe: ${vibe}` : ""}
 
-LEFT SECTION (55%): Full color portrait. Overlay style annotations:
-- Labels on clothing items with style category tags
-- Color coordination indicators
-- Style archetype badge (Casual / Formal / Streetwear / Minimalist / etc.)
+LEFT SECTION (55%): Full color portrait. Overlay style annotations, labels on clothing items with style category tags, color coordination indicators, and style archetype badge.
 
 RIGHT SECTION (45%): White/light gray background.
 HEADER: "OUTFIT STYLE REPORT" / "PERSONAL STYLE ASSESSMENT"
 STYLE PROFILE: Style Category / Color Palette / Key Pieces / Fit / Occasion / Style Score
 UPGRADE SUGGESTIONS: 3 ways to enhance this look
 DIAGRAM: Outfit flat-lay icons or style mood board
-NOTES: Based on visible clothing · Accessories not fully assessed · Style is subjective
 SUMMARY: 2–3 sentence professional style summary for ${name}.
 
 RULES: ✅ Full color · ✅ Annotations on photo · ✅ Identity unaltered · ✗ No grayscale · ✗ No watermarks`,
+    visualPrompt: (name, vibe, colors, layout) => buildVisualPrompt("outfit", name, vibe, colors, layout),
   },
   {
     id: "accessory",
@@ -314,22 +319,99 @@ Generate a professional Accessory Recommendation Report in a HORIZONTAL 16:9 lan
 
 Subject name: ${name}${vibe ? `\nStyle vibe: ${vibe}` : ""}
 
-LEFT SECTION (55%): Full color portrait. Overlay accessory guides:
-- Necklace length indicators for neckline
-- Earring style suggestions near ear area
-- Wrist/hand accessory placement markers
+LEFT SECTION (55%): Full color portrait. Overlay necklace length indicators, earring style suggestions near ear area, wrist/hand accessory placement markers.
 
 RIGHT SECTION (45%): White/light gray background.
 HEADER: "ACCESSORY GUIDE" / "JEWELRY & ACCESSORY PAIRING"
 RECOMMENDED: Necklace / Earrings / Bracelet / Ring / Bag / Hat — with style match scores
 AVOID: Accessory styles that clash with face shape or outfit
 DIAGRAM: Accessory icon grid with pairing labels
-NOTES: Based on visible features · Personal taste may vary · Style guidelines only
 SUMMARY: 2–3 sentence professional recommendation for ${name}.
 
 RULES: ✅ Full color · ✅ Annotations on photo · ✅ Identity unaltered · ✗ No grayscale · ✗ No watermarks`,
+    visualPrompt: (name, vibe, colors, layout) => buildVisualPrompt("accessory", name, vibe, colors, layout),
   },
 ];
+
+// ════════════════════════════════
+// Visual Prompt Builder
+// ════════════════════════════════
+function buildVisualPrompt(type, name, vibe, colors, layout) {
+  const colorStr = colors.length > 0 ? colors.join(", ") : "neutral tones";
+  const vibeStr = vibe ? ` The overall style direction is: ${vibe}.` : "";
+
+  const typeDetails = {
+    hairstyle: {
+      subject: "hairstyle makeover",
+      desc: `Show ${name} with 2 different recommended hairstyles that suit their face shape. Each panel shows the same person with a different hairstyle — keep face and identity 100% identical, only change the hair.`,
+      panels: {
+        side: `LEFT PANEL: Original photo of ${name}. RIGHT PANEL: ${name} with the most recommended hairstyle applied naturally.`,
+        grid: `PANEL 1: Original photo. PANEL 2: ${name} with recommended hairstyle #1 (e.g. Textured Crop). PANEL 3: ${name} with recommended hairstyle #2 (e.g. Side Part).`,
+        single: `Single image of ${name} with the top recommended hairstyle applied. Keep face identical, only update the hair style naturally.`,
+      },
+    },
+    outfit: {
+      subject: "outfit makeover",
+      desc: `Show ${name} wearing upgraded outfit looks using the recommended color palette: ${colorStr}. Keep face and identity 100% identical, only change the clothing.`,
+      panels: {
+        side: `LEFT PANEL: Original photo of ${name} in current outfit. RIGHT PANEL: ${name} wearing a stylish upgraded outfit in ${colorStr}.`,
+        grid: `PANEL 1: Original photo. PANEL 2: ${name} in outfit color option 1 (${colors[0] || "black"}). PANEL 3: ${name} in outfit color option 2 (${colors[1] || "navy"}).`,
+        single: `Single image of ${name} wearing a complete stylish outfit in ${colorStr}. Keep face identical, only update the clothing.`,
+      },
+    },
+    accessory: {
+      subject: "accessory styling",
+      desc: `Show ${name} styled with recommended accessories (necklace, earrings, bracelet). Keep face and identity 100% identical, only add accessories.`,
+      panels: {
+        side: `LEFT PANEL: Original photo of ${name} without accessories. RIGHT PANEL: ${name} styled with a complete accessory set — necklace, earrings, and bracelet that suit their features.`,
+        grid: `PANEL 1: Original photo. PANEL 2: ${name} with elegant jewelry set (gold/silver tones). PANEL 3: ${name} with a bold statement accessory look.`,
+        single: `Single image of ${name} wearing a curated accessory set that complements their face shape and style. Keep face identical, only add accessories.`,
+      },
+    },
+    color: {
+      subject: "personal color makeover",
+      desc: `Show ${name} wearing outfits in their best seasonal color palette: ${colorStr}. Keep face and identity 100% identical, only change the clothing colors.`,
+      panels: {
+        side: `LEFT PANEL: Original photo of ${name}. RIGHT PANEL: ${name} wearing an outfit in their best seasonal colors (${colorStr}).`,
+        grid: `PANEL 1: Original photo. PANEL 2: ${name} in best color palette outfit #1. PANEL 3: ${name} in best color palette outfit #2.`,
+        single: `Single image of ${name} wearing an outfit perfectly matched to their seasonal color type. Colors: ${colorStr}.`,
+      },
+    },
+  };
+
+  const info = typeDetails[type];
+  const layoutKey = layout === "side" ? "side" : layout === "grid" ? "grid" : "single";
+  const layoutDesc = info.panels[layoutKey];
+
+  const layoutFormat = {
+    side: "HORIZONTAL 16:9 layout split into 2 equal panels side by side.",
+    grid: "HORIZONTAL 16:9 layout split into 3 equal panels in a row.",
+    single: "VERTICAL portrait 9:16 layout, single makeover image.",
+  }[layoutKey];
+
+  return `This is a visual makeover image generation task. Use the uploaded photo as the ONLY reference for ${name}'s face, skin tone, and identity. Do NOT alter the face. Only apply the ${info.subject} changes described below.
+
+Subject: ${name}${vibeStr}
+
+LAYOUT: ${layoutFormat}
+
+${layoutDesc}
+
+STYLE NOTES:
+- ${info.desc}
+- Lighting: soft, natural, flattering
+- Background: clean studio or lifestyle setting
+- Quality: photorealistic, high detail
+- Colors to feature: ${colorStr}
+
+STRICT RULES:
+✅ Face & identity must remain 100% identical to the original photo
+✅ Photorealistic result
+✅ Clean, professional styling
+✗ Do NOT change facial features
+✗ Do NOT add text or watermarks
+✗ Do NOT use cartoon or illustration style`;
+}
 
 export default function App() {
   const [lang, setLang] = useState("en");
@@ -341,6 +423,9 @@ export default function App() {
   const [visitorCount, setVisitorCount] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [generated, setGenerated] = useState(false);
+  // Visual prompt states
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [visualLayout, setVisualLayout] = useState("side");
 
   const t = LANGS[lang];
   const ANALYSIS_TYPES = getAnalysisTypes(lang);
@@ -352,11 +437,11 @@ export default function App() {
       .catch(() => setVisitorCount("--"));
   }, []);
 
-  // 切换语言时重置 vibe（因为文字不同）
   const handleLangChange = (l) => {
     setLang(l);
     setSelectedVibe("");
     setGenerated(false);
+    setSelectedColors([]);
   };
 
   const handleImage = (file) => {
@@ -375,9 +460,15 @@ export default function App() {
 
   const toggleType = (id) => {
     setSelectedTypes((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
     setGenerated(false);
+  };
+
+  const toggleColor = (c) => {
+    setSelectedColors((prev) =>
+      prev.includes(c) ? prev.filter((x) => x !== c) : prev.length < 5 ? [...prev, c] : prev
+    );
   };
 
   const handleCopy = (id, prompt) => {
@@ -387,7 +478,8 @@ export default function App() {
     });
   };
 
-  const selectedTypesData = ANALYSIS_TYPES.filter((t) => selectedTypes.includes(t.id));
+  const selectedTypesData = ANALYSIS_TYPES.filter((x) => selectedTypes.includes(x.id));
+  const hasVisualTypes = selectedTypesData.some((x) => VISUAL_TYPES.includes(x.id));
 
   return (
     <>
@@ -409,14 +501,11 @@ export default function App() {
           animation: bgPulse 10s ease-in-out infinite alternate;
         }
         @keyframes bgPulse { from{opacity:0.7} to{opacity:1} }
-
         .top-header {
           background: linear-gradient(90deg, #6d28d9, #a21caf, #db2777);
-          padding: 14px 20px;
-          display: flex; align-items: center; justify-content: space-between;
+          padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
           position: sticky; top: 0; z-index: 100;
-          box-shadow: 0 2px 20px rgba(139,92,246,0.4);
-          flex-wrap: wrap; gap: 10px;
+          box-shadow: 0 2px 20px rgba(139,92,246,0.4); flex-wrap: wrap; gap: 10px;
         }
         .header-left { display: flex; align-items: center; gap: 10px; }
         .header-icon { font-size: 26px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.5)); }
@@ -425,54 +514,22 @@ export default function App() {
         .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
         .header-date { font-size: 12px; color: rgba(255,255,255,0.75); }
         .header-free { font-size: 11px; color: rgba(255,255,255,0.5); }
-
-        /* 语言切换器 */
-        .lang-switcher {
-          display: flex; gap: 4px; background: rgba(0,0,0,0.25);
-          border-radius: 999px; padding: 3px;
-        }
-        .lang-btn {
-          padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
-          border: none; cursor: pointer; transition: all 0.2s;
-          background: transparent; color: rgba(255,255,255,0.55);
-        }
-        .lang-btn.active {
-          background: rgba(255,255,255,0.2); color: white;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
+        .lang-switcher { display: flex; gap: 4px; background: rgba(0,0,0,0.25); border-radius: 999px; padding: 3px; }
+        .lang-btn { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; background: transparent; color: rgba(255,255,255,0.55); }
+        .lang-btn.active { background: rgba(255,255,255,0.2); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
         .lang-btn:hover:not(.active) { color: white; }
-
-        .main-content {
-          flex: 1; max-width: 760px; margin: 0 auto; width: 100%;
-          padding: 24px 16px 32px; display: flex; flex-direction: column; gap: 16px;
-          position: relative; z-index: 1;
-        }
-        .card {
-          background: rgba(255,255,255,0.04);
-          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 18px; padding: 20px;
-          transition: border-color 0.3s;
-        }
+        .main-content { flex: 1; max-width: 760px; margin: 0 auto; width: 100%; padding: 24px 16px 32px; display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 1; }
+        .card { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 20px; transition: border-color 0.3s; }
         .card:hover { border-color: rgba(139,92,246,0.25); }
-        .step-badge {
-          display: inline-flex; align-items: center;
-          background: linear-gradient(90deg, #f59e0b, #f97316);
-          color: white; font-size: 11px; font-weight: 800;
-          padding: 3px 10px; border-radius: 999px; margin-right: 10px;
-          letter-spacing: 0.5px; white-space: nowrap;
-        }
+        .card-visual { background: rgba(251,191,36,0.05); border: 1px solid rgba(251,191,36,0.2); border-radius: 18px; padding: 20px; }
+        .step-badge { display: inline-flex; align-items: center; background: linear-gradient(90deg, #f59e0b, #f97316); color: white; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; margin-right: 10px; letter-spacing: 0.5px; white-space: nowrap; }
         .step-badge.purple { background: linear-gradient(90deg, #7c3aed, #a855f7); }
         .step-badge.pink { background: linear-gradient(90deg, #db2777, #f472b6); }
+        .step-badge.gold { background: linear-gradient(90deg, #d97706, #f59e0b); }
         .card-title { font-size: 16px; font-weight: 700; color: white; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
         .card-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
-        .upload-zone {
-          border: 2px dashed rgba(255,255,255,0.15); border-radius: 14px;
-          cursor: pointer; transition: all 0.3s; overflow: hidden;
-        }
-        .upload-zone:hover, .upload-zone.drag-over {
-          border-color: rgba(167,139,250,0.6); background: rgba(139,92,246,0.07);
-        }
+        .upload-zone { border: 2px dashed rgba(255,255,255,0.15); border-radius: 14px; cursor: pointer; transition: all 0.3s; overflow: hidden; }
+        .upload-zone:hover, .upload-zone.drag-over { border-color: rgba(167,139,250,0.6); background: rgba(139,92,246,0.07); }
         .upload-inner { display: flex; align-items: center; gap: 16px; padding: 16px; }
         .upload-thumb { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(167,139,250,0.4); }
         .upload-placeholder { width: 90px; height: 90px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
@@ -482,11 +539,7 @@ export default function App() {
         .selected-count { background: linear-gradient(90deg, #7c3aed, #ec4899); color: white; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 999px; white-space: nowrap; }
         .multi-hint { font-size: 12px; color: rgba(255,255,255,0.35); margin-left: 4px; }
         .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .type-btn {
-          display: flex; align-items: center; gap: 10px;
-          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all 0.2s; text-align: left;
-        }
+        .type-btn { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all 0.2s; text-align: left; }
         .type-btn:hover { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.35); }
         .type-btn.selected { background: rgba(124,58,237,0.2); border-color: rgba(167,139,250,0.6); box-shadow: 0 0 16px rgba(139,92,246,0.2); }
         .type-icon { font-size: 22px; flex-shrink: 0; }
@@ -499,17 +552,34 @@ export default function App() {
         .vibe-btn:hover { border-color: rgba(167,139,250,0.4); color: white; }
         .vibe-btn.active { background: linear-gradient(135deg, #f59e0b, #f97316); border-color: transparent; color: white; font-weight: 700; box-shadow: 0 4px 14px rgba(245,158,11,0.35); }
         .vibe-label { font-size: 13px; font-weight: 600; color: #fbbf24; margin-bottom: 2px; }
+        /* Color chips */
+        .color-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .color-chip { padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 500; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s; }
+        .color-chip:hover { border-color: rgba(251,191,36,0.5); color: white; }
+        .color-chip.active { background: linear-gradient(135deg, #d97706, #f59e0b); border-color: transparent; color: white; font-weight: 700; }
+        /* Layout selector */
+        .layout-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .layout-btn { flex: 1; min-width: 120px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; text-align: center; }
+        .layout-btn:hover { border-color: rgba(251,191,36,0.4); color: white; }
+        .layout-btn.active { background: rgba(217,119,6,0.2); border-color: rgba(251,191,36,0.6); color: #fbbf24; font-weight: 700; }
+        .layout-icon { font-size: 18px; display: block; margin-bottom: 4px; }
         .generate-btn { width: 100%; padding: 16px; background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899); background-size: 200%; animation: gradShift 4s ease infinite; border: none; border-radius: 14px; color: white; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 24px rgba(139,92,246,0.45); letter-spacing: 0.3px; }
         .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(139,92,246,0.6); }
         .generate-btn:disabled { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); cursor: not-allowed; animation: none; box-shadow: none; transform: none; }
         @keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
         .prompt-block { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
-        .prompt-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(139,92,246,0.12); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .prompt-block.visual { border-color: rgba(251,191,36,0.25); background: rgba(217,119,6,0.07); }
+        .prompt-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(139,92,246,0.12); border-bottom: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; gap: 8px; }
+        .prompt-header.visual-header { background: rgba(217,119,6,0.15); border-bottom-color: rgba(251,191,36,0.15); }
         .prompt-type-label { font-size: 14px; font-weight: 700; color: white; }
+        .visual-badge { font-size: 10px; font-weight: 700; background: linear-gradient(90deg, #d97706, #f59e0b); color: white; padding: 2px 8px; border-radius: 999px; margin-left: 6px; }
         .copy-btn { padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; background: linear-gradient(90deg, #7c3aed, #ec4899); color: white; white-space: nowrap; }
+        .copy-btn.gold-btn { background: linear-gradient(90deg, #d97706, #f59e0b); }
         .copy-btn.done { background: linear-gradient(90deg, #059669, #10b981); }
         .copy-btn:hover { transform: scale(1.05); }
         .prompt-text { padding: 14px 16px; font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.7; max-height: 140px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
+        .visual-sub { font-size: 11px; color: rgba(251,191,36,0.6); padding: 8px 16px 0; }
+        .section-label { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
         .how-steps { display: flex; flex-direction: column; gap: 10px; }
         .how-step { display: flex; align-items: flex-start; gap: 12px; }
         .how-num { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, #7c3aed, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: white; }
@@ -541,10 +611,7 @@ export default function App() {
         .copyright { text-align: center; font-size: 11px; color: rgba(255,255,255,0.15); }
         .fade-in { animation: fadeUp 0.4s ease forwards; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        @media (max-width: 480px) {
-          .type-grid { grid-template-columns: 1fr; }
-          .header-title { font-size: 15px; }
-        }
+        @media (max-width: 480px) { .type-grid { grid-template-columns: 1fr; } .header-title { font-size: 15px; } .layout-row { flex-direction: column; } }
       `}</style>
 
       <div className="page-wrap">
@@ -558,18 +625,9 @@ export default function App() {
             </div>
           </div>
           <div className="header-right">
-            {/* 语言切换器 */}
             <div className="lang-switcher">
-              {[
-                { code: "en", label: "🇺🇸 EN" },
-                { code: "zh", label: "🇨🇳 中文" },
-                { code: "ja", label: "🇯🇵 日本語" },
-              ].map(({ code, label }) => (
-                <button
-                  key={code}
-                  className={`lang-btn${lang === code ? " active" : ""}`}
-                  onClick={() => handleLangChange(code)}
-                >{label}</button>
+              {[{code:"en",label:"🇺🇸 EN"},{code:"zh",label:"🇨🇳 中文"},{code:"ja",label:"🇯🇵 日本語"}].map(({code,label})=>(
+                <button key={code} className={`lang-btn${lang===code?" active":""}`} onClick={()=>handleLangChange(code)}>{label}</button>
               ))}
             </div>
             <div className="header-date">{t.dateLabel(new Date())}</div>
@@ -582,31 +640,24 @@ export default function App() {
           {/* STEP 1 */}
           <div className="card">
             <div className="card-title-row">
-              <div className="card-title">
-                <span className="step-badge">STEP 1</span>{t.step1}
-              </div>
+              <div className="card-title"><span className="step-badge">STEP 1</span>{t.step1}</div>
               <div className="visits-pill">
-                <div className="live-dot" />
-                <span>{visitorCount !== null ? Number(visitorCount).toLocaleString() : "..."} {t.visits}</span>
+                <div className="live-dot"/>
+                <span>{visitorCount!==null?Number(visitorCount).toLocaleString():"..."} {t.visits}</span>
               </div>
             </div>
-            <div
-              className={`upload-zone${dragOver ? " drag-over" : ""}`}
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
+            <div className={`upload-zone${dragOver?" drag-over":""}`}
+              onDragOver={(e)=>{e.preventDefault();setDragOver(true);}}
+              onDragLeave={()=>setDragOver(false)}
               onDrop={handleDrop}
-              onClick={() => document.getElementById("fileInput").click()}
-            >
-              <input id="fileInput" type="file" accept="image/*" style={{display:"none"}} onChange={(e) => handleImage(e.target.files[0])} />
+              onClick={()=>document.getElementById("fileInput").click()}>
+              <input id="fileInput" type="file" accept="image/*" style={{display:"none"}} onChange={(e)=>handleImage(e.target.files[0])}/>
               <div className="upload-inner">
-                {image
-                  ? <img src={image} alt="uploaded" className="upload-thumb" />
-                  : <div className="upload-placeholder">📷</div>
-                }
+                {image?<img src={image} alt="uploaded" className="upload-thumb"/>:<div className="upload-placeholder">📷</div>}
                 <div>
                   {image
-                    ? <div className="upload-text-success">{t.uploadSuccess}</div>
-                    : <div style={{color:"rgba(255,255,255,0.7)",fontWeight:600,fontSize:14,marginBottom:8}}>{t.uploadClick}</div>
+                    ?<div className="upload-text-success">{t.uploadSuccess}</div>
+                    :<div style={{color:"rgba(255,255,255,0.7)",fontWeight:600,fontSize:14,marginBottom:8}}>{t.uploadClick}</div>
                   }
                   <div className="upload-hint">• {t.uploadHint1}<br/>• {t.uploadHint2}</div>
                   <div className="upload-tip">💡 {t.uploadTip}</div>
@@ -619,143 +670,90 @@ export default function App() {
           <div className="card">
             <div className="card-title-row">
               <div className="card-title">
-                <span className="step-badge purple">STEP 2</span>
-                {t.step2}
+                <span className="step-badge purple">STEP 2</span>{t.step2}
                 <span className="multi-hint">{t.step2multi}</span>
               </div>
-              {selectedTypes.length > 0 && (
-                <span className="selected-count">{t.selected(selectedTypes.length)}</span>
-              )}
+              {selectedTypes.length>0&&<span className="selected-count">{t.selected(selectedTypes.length)}</span>}
             </div>
             <div className="type-grid">
-              {ANALYSIS_TYPES.map((type) => {
-                const isSelected = selectedTypes.includes(type.id);
-                return (
-                  <button key={type.id} className={`type-btn${isSelected ? " selected" : ""}`} onClick={() => toggleType(type.id)}>
+              {ANALYSIS_TYPES.map((type)=>{
+                const isSel=selectedTypes.includes(type.id);
+                return(
+                  <button key={type.id} className={`type-btn${isSel?" selected":""}`} onClick={()=>toggleType(type.id)}>
                     <span className="type-icon">{type.icon}</span>
                     <div style={{flex:1}}>
                       <div className="type-label">{type.label}</div>
                       <div className="type-sub">{type.sub}</div>
                     </div>
-                    <div className={`type-check${isSelected ? " checked" : ""}`}>{isSelected ? "✓" : ""}</div>
+                    {VISUAL_TYPES.includes(type.id)&&<span style={{fontSize:9,color:"#fbbf24",fontWeight:700,marginRight:4}}>✦ VISUAL</span>}
+                    <div className={`type-check${isSel?" checked":""}`}>{isSel?"✓":""}</div>
                   </button>
                 );
               })}
             </div>
+            {hasVisualTypes&&(
+              <div style={{marginTop:10,padding:"8px 12px",background:"rgba(251,191,36,0.07)",borderRadius:10,border:"1px solid rgba(251,191,36,0.15)"}}>
+                <span style={{fontSize:11,color:"#fbbf24"}}>✦ Items marked VISUAL support bonus makeover image prompts below</span>
+              </div>
+            )}
           </div>
 
           {/* STEP 3 */}
           <div className="card">
             <div className="card-title">
-              <span className="step-badge pink">STEP 3</span>
-              {t.step3}
+              <span className="step-badge pink">STEP 3</span>{t.step3}
               <span className="multi-hint">{t.step3opt}</span>
             </div>
             <div style={{marginTop:14}}>
               <div className="vibe-label">{t.vibeLabel}</div>
               <div className="vibe-row">
-                {t.vibes.map((v) => (
-                  <button key={v} className={`vibe-btn${selectedVibe === v ? " active" : ""}`} onClick={() => setSelectedVibe(selectedVibe === v ? "" : v)}>{v}</button>
+                {t.vibes.map((v)=>(
+                  <button key={v} className={`vibe-btn${selectedVibe===v?" active":""}`} onClick={()=>setSelectedVibe(selectedVibe===v?"":v)}>{v}</button>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Name */}
-          <div className="card">
-            <label style={{fontSize:13,fontWeight:600,color:"rgba(255,255,255,0.45)",textTransform:"uppercase",letterSpacing:"0.5px",display:"block",marginBottom:10}}>
-              👤 {t.nameLabel} <span style={{color:"rgba(255,255,255,0.25)",fontWeight:400,textTransform:"none"}}>{t.nameSub}</span>
-            </label>
-            <input
-              type="text"
-              placeholder={t.namePlaceholder}
-              value={userName}
-              onChange={(e) => { setUserName(e.target.value); setGenerated(false); }}
-              style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"11px 16px",fontSize:14,color:"white",outline:"none",fontFamily:"Inter,sans-serif",transition:"border-color 0.3s"}}
-            />
-          </div>
-
-          {/* Generate */}
-          <button
-            className="generate-btn"
-            disabled={selectedTypes.length === 0}
-            onClick={() => setGenerated(true)}
-          >
-            {selectedTypes.length === 0 ? t.generateDisabled : t.generateBtn(selectedTypes.length)}
-          </button>
-
-          {/* Prompts */}
-          {generated && selectedTypesData.length > 0 && (
-            <div className="card fade-in">
-              <div style={{fontSize:13,fontWeight:600,color:"rgba(255,255,255,0.45)",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:14}}>
-                {t.promptTitle(selectedTypesData.length)}
+          {/* Visual Options — only show if visual types selected */}
+          {hasVisualTypes&&(
+            <div className="card-visual">
+              <div className="card-title">
+                <span className="step-badge gold">✦ VISUAL</span>
+                {t.visualPromptLabel}
               </div>
-              {selectedTypesData.map((type) => {
-                const prompt = type.prompt(userName || "this person", selectedVibe);
-                return (
-                  <div key={type.id} className="prompt-block">
-                    <div className="prompt-header">
-                      <span className="prompt-type-label">{type.icon} {type.label}</span>
-                      <button className={`copy-btn${copiedId === type.id ? " done" : ""}`} onClick={() => handleCopy(type.id, prompt)}>
-                        {copiedId === type.id ? t.copiedBtn : t.copyBtn}
-                      </button>
-                    </div>
-                    <div className="prompt-text">{prompt}</div>
+              <p style={{fontSize:12,color:"rgba(251,191,36,0.6)",marginTop:6,marginBottom:16}}>{t.visualPromptSub}</p>
+
+              {/* Color picker — show for outfit/color types */}
+              {selectedTypesData.some(x=>["outfit","color"].includes(x.id))&&(
+                <div style={{marginBottom:16}}>
+                  <div className="section-label">{t.outfitColorLabel}</div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:8}}>{t.outfitColorSub} (max 5 · {selectedColors.length}/5)</div>
+                  <div className="color-grid">
+                    {t.colors.map((c)=>(
+                      <button key={c} className={`color-chip${selectedColors.includes(c)?" active":""}`} onClick={()=>toggleColor(c)}>{c}</button>
+                    ))}
                   </div>
-                );
-              })}
+                </div>
+              )}
+
+              {/* Layout selector */}
+              <div>
+                <div className="section-label">{t.layoutLabel}</div>
+                <div className="layout-row">
+                  <button className={`layout-btn${visualLayout==="side"?" active":""}`} onClick={()=>setVisualLayout("side")}>
+                    <span className="layout-icon">◧</span>{t.layoutSide}
+                  </button>
+                  <button className={`layout-btn${visualLayout==="grid"?" active":""}`} onClick={()=>setVisualLayout("grid")}>
+                    <span className="layout-icon">⊞</span>{t.layoutGrid}
+                  </button>
+                  <button className={`layout-btn${visualLayout==="single"?" active":""}`} onClick={()=>setVisualLayout("single")}>
+                    <span className="layout-icon">▭</span>{t.layoutSingle}
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* How to Use */}
+          {/* Name */}
           <div className="card">
-            <div style={{fontSize:13,fontWeight:600,color:"rgba(255,255,255,0.45)",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:14}}>
-              {t.howTitle}
-            </div>
-            <div className="how-steps">
-              {t.howSteps.map((step, i) => (
-                <div key={i} className="how-step">
-                  <div className="how-num">{i + 1}</div>
-                  <div className="how-text">
-                    {i === 3
-                      ? <>{
-                          lang === "en" ? <>Go to <a href="https://chat.openai.com" target="_blank" rel="noreferrer" className="how-link">ChatGPT ↗</a> · Upload your photo · Paste the prompt · Get your report!</>
-                          : lang === "zh" ? <>前往 <a href="https://chat.openai.com" target="_blank" rel="noreferrer" className="how-link">ChatGPT ↗</a> · 上传照片 · 粘贴提示词 · 获取你的专业报告！</>
-                          : <>  <a href="https://chat.openai.com" target="_blank" rel="noreferrer" className="how-link">ChatGPT ↗</a> へ · 写真をアップロード · プロンプトを貼り付け · レポートを取得！</>
-                        }</>
-                      : step
-                    }
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </main>
-
-        {/* FOOTER */}
-        <footer>
-          <div className="footer-inner">
-            <div className="author-row">
-              <div className="avatar">H</div>
-              <div>
-                <div className="author-name">Henry Wang</div>
-                <div className="author-bio">{t.authorBio}</div>
-              </div>
-            </div>
-            <div className="social-row">
-              <a href="https://www.youtube.com/@TubeUnderdeveloped" target="_blank" rel="noreferrer" className="soc-btn soc-yt">▶ TubeUnderdeveloped</a>
-              <a href="https://www.youtube.com/@DreamWeaveAnimation" target="_blank" rel="noreferrer" className="soc-btn soc-yt2">🎬 DreamWeave Animation</a>
-              <a href="https://www.buymeacoffee.com/tubeuchannel" target="_blank" rel="noreferrer" className="soc-btn soc-coffee">☕ Buy Me a Coffee</a>
-            </div>
-            <div className="divider" />
-            <div className="ad-box">
-              <div className="ad-title">{t.adTitle}</div>
-              <div className="ad-sub">{t.adSub} <a href="mailto:zhhwang168@gmail.com" className="ad-link">zhhwang168@gmail.com</a></div>
-            </div>
-            <div className="copyright">© {new Date().getFullYear()} Henry Wang · AI Style Analyzer</div>
-          </div>
-        </footer>
-      </div>
-    </>
-  );
-}
+            <label style={{fontSize:13,fontWeight
