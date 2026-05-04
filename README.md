@@ -25,30 +25,72 @@
 
 ---
 
+---
+
+## 🎯 Live Demo Results / 真实效果展示 / 実際の結果
+
+> 以下是使用本工具生成的真实 AI 改造效果（综合分析：眼镜+发型+穿搭+配色）
+> Real AI transformation using this tool (Combined analysis: Glasses + Hairstyle + Outfit + Color)
+
+### ✨ Tech Entrepreneur Style Transformation
+
+![Elon Style Analysis Demo](./screenshots/elon-demo.png)
+
+**Analysis Types:** 👓 Glasses Guide + 💇 Hairstyle Analysis + 👗 Outfit Style + 🎨 Color Palette  
+**Style Direction:** Monochrome. Tailored. Timeless. Confident. Strategic. Iconic.
+
+**Key Recommendations:**
+- **Eyewear:** Modern rectangular frames with clean lines
+- **Hairstyle:** Tight sides, textured top with natural volume
+- **Outfit:** All-black monochrome, tailored fit, strategic minimalism
+- **Color Palette:** Charcoal, slate gray, jet black, cool-toned neutrals
+
+---
+
+### 🎩 Business Professional Style Transformation
+
+![Trump Style Analysis Demo](./screenshots/trump-demo.png)
+
+**Analysis Types:** 👓 Glasses Guide + 💇 Hairstyle Analysis + 👗 Outfit Style  
+**Style Direction:** Smart, refined, and timeless. Confident. Approachable. Presidential.
+
+**Key Recommendations:**
+- **Eyewear:** Classic rectangular frames in black or tortoiseshell
+- **Hairstyle:** Keep sides neat and tapered, maintain natural volume on top
+- **Outfit:** Navy blazer + light blue shirt + khaki pants + brown leather accessories
+- **Overall Vibe:** Business casual elegance with approachable confidence
+
+---
+
+> 💡 **Note:** Demo images use publicly available photos of public figures for educational and technical demonstration purposes only. Not endorsed by or affiliated with the individuals shown.
+> 
+> 💡 **说明：** 演示使用公开照片，仅用于教育和技术展示目的。未经本人授权或代言。
+>
+> 💡 **注記：** デモ画像は教育および技術デモンストレーション目的でのみ使用されています。本人による推奨や提携はありません。
+
+---
+
+
 ## 🖼️ Sample Output / 效果展示 / サンプル出力
 
 > 以下是使用本工具生成 Prompt 后，在 ChatGPT 中得到的实际报告效果 👇
 > Below are real report outputs generated via ChatGPT using this tool's prompts.
 
-### 💇 Hairstyle Analysis Report / 发型分析报告
-![Hairstyle Analysis Sample](./screenshots/hairstyle-sample.png)
-> *Face shape detected → Recommended & avoid hairstyles with suitability ratings*
+### 🧑 Hairstyle Analysis Report / 发型分析报告
+![Hairstyle Analysis Sample](./screenshots/sample.png)
+> *Face shape detected · Recommended & avoid hairstyles with suitability ratings*
 
-### 🎨 Personal Color Analysis Report / 个人色彩分析报告
-![Color Analysis Sample](./screenshots/color-sample.png)
-> *Seasonal color type → Best & avoid colors with hex codes*
+### 🎨 Personal Glass Analysis Report / 个人眼镜分析报告
+![Color Analysis Sample](./screenshots/glass.png)
+> *Seasonal glass type · Best & avoid glass with hex codes*
 
 ### 🔬 Facial Feature Analysis Report / 面部特征分析报告
-![Facial Analysis Sample](./screenshots/facial-sample.png)
-> *Anthropometric measurements → Proportion index & face shape diagram*
+![Facial Analysis Sample](./screenshots/face.png)
+> *Anthropometric measurements · Proportion index & face shape diagram*
 
 ### 👗 Outfit Style Report / 穿搭风格报告
-![Outfit Sample](./screenshots/outfit-sample.png)
-> *Style archetype → Key pieces assessment & upgrade suggestions*
-
-### 💍 Accessory Guide / 配饰搭配指南
-![Accessory Sample](./screenshots/accessory-sample.png)
-> *Face shape & outfit matching → Recommended jewelry & accessories*
+![Outfit Sample](./screenshots/outfit.png)
+> *Style archetype · Key pieces assessment & upgrade suggestions*
 
 > 💡 **Tip:** Upload your own photo to get a fully personalized report!
 > 💡 **提示：** 上传你自己的照片，即可获得完全个性化的分析报告！
@@ -105,7 +147,7 @@
 
 ### v1.2.0 — 2026-05-02
 - 🌐 Added 3-language support (EN / 中文 / 日本語)
-- ➕ Added Outfit Style Guide & Accessory Guide (8 types total)
+- ✨ Added Outfit Style Guide & Accessory Guide (8 types total)
 - 🎨 Upgraded UI to glassmorphism dark theme
 - 🇨🇳 Added China mirror via Tencent EdgeOne
 
@@ -128,7 +170,7 @@
 1. **Upload** your portrait photo
 2. **Select** one or more analysis types
 3. **Pick** a style vibe direction *(optional)*
-4. Click **✦ Generate Prompts**
+4. Click **✨ Generate Prompts**
 5. **Copy** the prompt(s)
 6. Go to [ChatGPT](https://chat.openai.com) → Upload photo → Paste prompt → Get your report!
 
@@ -136,7 +178,7 @@
 1. **上传**你的人像照片
 2. **选择**一个或多个分析类型
 3. **选择**风格方向（可选）
-4. 点击 **✦ 生成提示词**
+4. 点击 **✨ 生成提示词**
 5. **复制**提示词
 6. 前往 [ChatGPT](https://chat.openai.com) → 上传照片 → 粘贴提示词 → 获取专业报告！
 
@@ -144,7 +186,7 @@
 1. 顔写真を**アップロード**
 2. 分析タイプを**選択**（複数可）
 3. スタイルバイブを**選ぶ**（任意）
-4. **✦ プロンプトを生成**をクリック
+4. **✨ プロンプトを生成**をクリック
 5. プロンプトを**コピー**
 6. [ChatGPT](https://chat.openai.com) へ → 写真をアップロード → プロンプトを貼り付け → レポートを取得！
 
@@ -188,15 +230,16 @@ npm run build
 ├── index.html
 ├── package.json
 ├── vite.config.js
-├── screenshots/              ← Sample output images
-│   ├── hairstyle-sample.png
-│   ├── color-sample.png
-│   ├── facial-sample.png
-│   ├── outfit-sample.png
-│   └── accessory-sample.png
+├── screenshots/              # Sample output images
+│   ├── elon-demo.png         # Tech entrepreneur demo
+│   ├── trump.png             # Business professional demo
+│   ├── sample.png            # Hairstyle analysis
+│   ├── glass.png             # Glasses guide
+│   ├── face.png              # Facial analysis
+│   └── outfit.png            # Outfit style
 └── src/
     ├── main.jsx
-    └── App.jsx               ← Main application component
+    └── App.jsx               # Main application component
 ```
 
 ---
@@ -210,8 +253,8 @@ npm run build
 
 | Platform | Link |
 |----------|------|
-| ▶ YouTube (Main) | [@TubeUnderdeveloped](https://www.youtube.com/@TubeUnderdeveloped) |
-| 🎬 YouTube (Animation) | [@DreamWeaveAnimation](https://www.youtube.com/@DreamWeaveAnimation) |
+| 📺 YouTube (Main) | [@TubeUnderdeveloped](https://www.youtube.com/@TubeUnderdeveloped) |
+| 🎬 YouTube (Animation) | [@DreamWeaveAnimation](https://www.youtube.com/@DreamWeave_Animation) |
 | ☕ Buy Me a Coffee | [tubeuchannel](https://www.buymeacoffee.com/tubeuchannel) |
 
 ---
@@ -226,6 +269,35 @@ npm run build
 
 ---
 
+## 🌟 Support This Project / 支持本项目 / このプロジェクトをサポート
+
+If you find this tool helpful, consider:
+- ⭐ **Star this repo** on GitHub
+- ☕ **Buy me a coffee** at [buymeacoffee.com/tubeuchannel](https://www.buymeacoffee.com/tubeuchannel)
+- 📢 **Share** with your friends
+
+如果你觉得这个工具有用：
+- ⭐ 在 GitHub 上给个 **Star**
+- ☕ 请我喝杯咖啡 [buymeacoffee.com/tubeuchannel](https://www.buymeacoffee.com/tubeuchannel)
+- 📢 **分享**给你的朋友
+
+このツールが役に立ったら：
+- ⭐ GitHubで**スター**をつける
+- ☕ コーヒーをおごる [buymeacoffee.com/tubeuchannel](https://www.buymeacoffee.com/tubeuchannel)
+- 📢 友達に**シェア**する
+
+---
+
 ## 📄 License
 
 MIT License © 2026 Henry Wang
+
+---
+
+<div align="center">
+
+**Made with ❤️ by Henry Wang**
+
+[🌐 Visit App](https://analyzer-amber-eta.vercel.app/) · [🐛 Report Bug](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/issues) · [💡 Request Feature](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/issues)
+
+</div>
