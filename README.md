@@ -34,7 +34,7 @@
 
 ### ✨ Tech Entrepreneur Style Transformation
 
-![Elon Style Analysis Demo](./screenshots/elon-demo.png)
+![Elon Style Analysis Demo](./public/screenshots/elon-demo.png)
 
 **Analysis Types:** 👓 Glasses Guide + 💇 Hairstyle Analysis + 👗 Outfit Style + 🎨 Color Palette  
 **Style Direction:** Monochrome. Tailored. Timeless. Confident. Strategic. Iconic.
@@ -49,7 +49,7 @@
 
 ### 🎩 Business Professional Style Transformation
 
-![Trump Style Analysis Demo](./screenshots/trump-demo.png)
+![Trump Style Analysis Demo](./public/screenshots/trump-demo.png)
 
 **Analysis Types:** 👓 Glasses Guide + 💇 Hairstyle Analysis + 👗 Outfit Style  
 **Style Direction:** Smart, refined, and timeless. Confident. Approachable. Presidential.
@@ -77,19 +77,19 @@
 > Below are real report outputs generated via ChatGPT using this tool's prompts.
 
 ### 🧑 Hairstyle Analysis Report / 发型分析报告
-![Hairstyle Analysis Sample](./screenshots/sample.png)
+![Hairstyle Analysis Sample](./public/screenshots/sample.png)
 > *Face shape detected · Recommended & avoid hairstyles with suitability ratings*
 
 ### 🎨 Personal Glass Analysis Report / 个人眼镜分析报告
-![Color Analysis Sample](./screenshots/glass.png)
+![Color Analysis Sample](./public/screenshots/glass.png)
 > *Seasonal glass type · Best & avoid glass with hex codes*
 
 ### 🔬 Facial Feature Analysis Report / 面部特征分析报告
-![Facial Analysis Sample](./screenshots/face.png)
+![Facial Analysis Sample](./public/screenshots/face.png)
 > *Anthropometric measurements · Proportion index & face shape diagram*
 
 ### 👗 Outfit Style Report / 穿搭风格报告
-![Outfit Sample](./screenshots/outfit.png)
+![Outfit Sample](./public/screenshots/outfit.png)
 > *Style archetype · Key pieces assessment & upgrade suggestions*
 
 > 💡 **Tip:** Upload your own photo to get a fully personalized report!
@@ -227,19 +227,24 @@ npm run build
 
 ```
 /
+```text
+/
 ├── index.html
 ├── package.json
 ├── vite.config.js
-├── screenshots/              # Sample output images
-│   ├── elon-demo.png         # Tech entrepreneur demo
-│   ├── trump.png             # Business professional demo
-│   ├── sample.png            # Hairstyle analysis
-│   ├── glass.png             # Glasses guide
-│   ├── face.png              # Facial analysis
-│   └── outfit.png            # Outfit style
+├── public/
+│   └── screenshots/              # Sample output images
+│       ├── elon-demo.png         # Tech entrepreneur demo
+│       ├── trump.png             # Business professional demo
+│       ├── sample.png            # Hairstyle analysis
+│       ├── glass.png             # Glasses guide
+│       ├── face.png              # Facial analysis
+│       └── outfit.png            # Outfit style
 └── src/
     ├── main.jsx
-    └── App.jsx               # Main application component
+    └── App.jsx                   # Main application component
+```
+
 ```
 
 ---
