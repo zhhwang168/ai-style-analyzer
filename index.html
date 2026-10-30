@@ -1,12 +1,777 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Style Analyzer</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Style Guide | AI 个人风格指南</title>
+  <meta name="description" content="AI 辅助个人形象分析，发型·眼镜·穿搭·配色，专业报告邮件交付"/>
+  <meta property="og:title" content="AI Style Guide"/>
+  <meta property="og:image" content="images/after.jpg"/>
+  <style>
+    :root{
+      --cream:#faf8f4;--cream2:#f2ede4;--cream3:#e8e0d0;
+      --green:#6b9e70;--green2:#4d7a52;--green3:#e6f0e7;
+      --navy:#1e2d40;--navy2:#2d4560;
+      --gold:#c9a84c;--gold2:#fff3cd;
+      --red:#e05c5c;--red2:#fdecea;
+      --gray1:#2a2a2a;--gray2:#555;--gray3:#888;--gray4:#bbb;
+      --r:14px;--r2:8px;
+      --sh:0 4px 20px rgba(0,0,0,.08);
+      --sh2:0 8px 36px rgba(0,0,0,.14);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:-apple-system,'Hiragino Sans','Noto Sans CJK SC',sans-serif;background:var(--cream);color:var(--gray1);line-height:1.7}
+    .promo-banner{background:linear-gradient(90deg,var(--gold),#e8b84b);color:#5a3a00;text-align:center;padding:9px 16px;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+    .promo-banner em{font-style:normal;background:rgba(0,0,0,.12);border-radius:6px;padding:1px 8px}
+    nav{position:sticky;top:0;z-index:200;background:rgba(250,248,244,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--cream3);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+    .nav-logo{font-size:1.05rem;font-weight:800;color:var(--navy);text-decoration:none;display:flex;align-items:center;gap:7px}
+    .nav-logo em{color:var(--green);font-style:normal}
+    .nav-r{display:flex;align-items:center;gap:6px}
+    .lang-btn{background:none;border:1.5px solid var(--cream3);border-radius:18px;padding:3px 11px;font-size:.78rem;cursor:pointer;color:var(--gray2);transition:.2s}
+    .lang-btn:hover,.lang-btn.on{background:var(--green);color:#fff;border-color:var(--green)}
+    .nav-btn{background:var(--navy);color:#fff;border:none;border-radius:18px;padding:7px 18px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;transition:.2s;margin-left:6px}
+    .nav-btn:hover{background:var(--navy2)}
+    .hero{max-width:1000px;margin:0 auto;padding:72px 24px 56px;text-align:center}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green3);color:var(--green2);border-radius:20px;padding:5px 16px;font-size:.78rem;font-weight:700;margin-bottom:22px;letter-spacing:.04em}
+    .hero h1{font-size:clamp(1.9rem,4.5vw,3rem);font-weight:900;line-height:1.25;color:var(--navy);margin-bottom:18px}
+    .hero h1 em{color:var(--green);font-style:normal}
+    .hero-sub{font-size:clamp(.92rem,2vw,1.08rem);color:var(--gray2);max-width:580px;margin:0 auto 32px}
+    .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+    .btn-g{background:var(--green);color:#fff;border:none;border-radius:28px;padding:14px 34px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:.2s;box-shadow:0 4px 18px rgba(107,158,112,.38)}
+    .btn-g:hover{background:var(--green2);transform:translateY(-1px)}
+    .btn-n{background:var(--navy);color:#fff;border:none;border-radius:28px;padding:14px 34px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:.2s}
+    .btn-n:hover{background:var(--navy2)}
+    .btn-o{background:#fff;color:var(--gray1);border:1.5px solid var(--cream3);border-radius:28px;padding:13px 28px;font-size:.92rem;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block;transition:.2s}
+    .btn-o:hover{border-color:var(--green);color:var(--green)}
+    .ba-card{max-width:820px;margin:0 auto 16px;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh2);display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--cream3)}
+    .ba-side{position:relative;background:#fff}
+    .ba-side.after{background:#f0f4f8}
+    .ba-label{position:absolute;top:12px;left:12px;z-index:2;background:var(--gray1);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;border-radius:6px;padding:3px 10px}
+    .ba-side.after .ba-label{background:var(--green)}
+    .ba-photo{width:100%;height:260px;object-fit:cover;object-position:top;display:block}
+    .ba-footer{padding:14px 16px}
+    .ba-tags{display:flex;flex-wrap:wrap;gap:5px}
+    .ba-tag{font-size:.72rem;padding:3px 9px;border-radius:10px;background:var(--cream2);color:var(--gray2)}
+    .ba-tag.good{background:var(--green3);color:var(--green2);font-weight:600}
+    .ba-desc{font-size:.78rem;color:var(--gray3);margin-top:6px}
+    @media(max-width:540px){.ba-card{grid-template-columns:1fr}.ba-photo{height:200px}.ba-side.after{border-top:3px solid var(--green)}}
+    .trust-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+    .trust-item{font-size:.78rem;color:var(--gray3);display:flex;align-items:center;gap:4px}
+    .trust-item::before{content:"✓";color:var(--green);font-weight:800}
+    .sec{max-width:980px;margin:0 auto;padding:64px 24px}
+    .sec-hd{text-align:center;margin-bottom:44px}
+    .sec-hd h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--navy);margin-bottom:10px}
+    .sec-hd p{color:var(--gray2);font-size:.95rem;max-width:560px;margin:0 auto}
+    hr.div{border:none;border-top:1px solid var(--cream3)}
+    .free-sample{max-width:820px;margin:0 auto;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh2);border:2px solid var(--green3)}
+    .free-sample-header{background:var(--green3);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+    .free-sample-header span{font-size:.82rem;font-weight:700;color:var(--green2)}
+    .free-sample-badge{background:var(--green);color:#fff;font-size:.7rem;border-radius:8px;padding:2px 10px;font-weight:700}
+    .free-sample img{width:100%;display:block;max-height:460px;object-fit:contain;background:#fff;cursor:zoom-in}
+    .samples-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    @media(max-width:720px){.samples-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:460px){.samples-grid{grid-template-columns:1fr}}
+    .sample-card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;transition:.25s;border:2px solid transparent;cursor:zoom-in}
+    .sample-card:hover{box-shadow:var(--sh2);border-color:var(--green3);transform:translateY(-3px)}
+    .sample-thumb{height:190px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+    .sample-thumb img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .3s;display:block}
+    .sample-card:hover .sample-thumb img{transform:scale(1.04)}
+    .sample-thumb.c1{background:linear-gradient(135deg,#e8f0e9,#c8deca)}
+    .sample-thumb.c2{background:linear-gradient(135deg,#e8eaf6,#c5cae9)}
+    .sample-thumb.c3{background:linear-gradient(135deg,#fff8e1,#ffecb3)}
+    .sample-thumb.c4{background:linear-gradient(135deg,#fce4ec,#f8bbd0)}
+    .sample-thumb.c5{background:linear-gradient(135deg,#e0f7fa,#b2ebf2)}
+    .sample-thumb.c6{background:linear-gradient(135deg,#f3e5f5,#e1bee7)}
+    .sample-thumb.c7{background:linear-gradient(135deg,#e8f5e9,#a5d6a7)}
+    .sample-badge-overlay{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.55);color:#fff;font-size:.65rem;border-radius:8px;padding:2px 8px;z-index:1;white-space:nowrap}
+    .sample-body{padding:16px}
+    .sample-body h3{font-size:.9rem;font-weight:700;margin-bottom:5px}
+    .sample-body p{font-size:.79rem;color:var(--gray2);line-height:1.5}
+    .sample-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+    .pill{font-size:.7rem;padding:2px 8px;border-radius:8px;background:var(--cream2);color:var(--gray2)}
+    .pill.special{background:var(--navy);color:#fff}
+    .report-structure{max-width:640px;margin:28px auto 0;background:#fff;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;border:1px solid var(--cream3)}
+    .rs-header{background:var(--navy);color:#fff;padding:12px 20px;font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:8px}
+    .rs-row{display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--cream2);gap:12px}
+    .rs-row:last-child{border:none}
+    .rs-num{width:26px;height:26px;border-radius:50%;background:var(--green3);color:var(--green2);font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .rs-num.special{background:var(--navy);color:#fff}
+    .rs-num.travel{background:#e8f5e9;color:#2e7d32}
+    .rs-text{font-size:.84rem;color:var(--gray1);flex:1}
+    .rs-text span{font-size:.74rem;color:var(--gray3);display:block}
+    .rs-pages{font-size:.72rem;color:var(--gray3);white-space:nowrap}
+    .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:22px}
+    .plan-card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:32px 26px;border:2px solid transparent;transition:.25s;position:relative}
+    .plan-card:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+    .plan-card.free{border-color:var(--cream3)}
+    .plan-card.basic{border-color:var(--green)}
+    .plan-card.pro{border-color:var(--navy)}
+    .plan-ribbon{position:absolute;top:-13px;left:50%;transform:translateX(-50%);border-radius:12px;padding:3px 16px;font-size:.72rem;font-weight:800;white-space:nowrap}
+    .plan-ribbon.green{background:var(--green);color:#fff}
+    .plan-ribbon.navy{background:var(--navy);color:#fff}
+    .plan-icon{font-size:2rem;margin-bottom:12px}
+    .plan-name{font-size:.82rem;color:var(--gray3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+    .plan-price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+    .plan-price-orig{font-size:1rem;color:var(--gray4);text-decoration:line-through}
+    .plan-price{font-size:2.2rem;font-weight:900;color:var(--navy)}
+    .plan-price span{font-size:1rem;font-weight:500;color:var(--gray3)}
+    .plan-promo-tag{background:var(--red2);color:var(--red);font-size:.72rem;font-weight:800;border-radius:8px;padding:2px 8px;white-space:nowrap}
+    .plan-delivery{font-size:.78rem;color:var(--gray3);margin-bottom:18px}
+    .plan-features{list-style:none;margin-bottom:22px}
+    .plan-features li{font-size:.84rem;padding:5px 0;border-bottom:1px solid var(--cream2);display:flex;align-items:flex-start;gap:7px;color:var(--gray2)}
+    .plan-features li:last-child{border:none}
+    .plan-features li::before{content:"✓";color:var(--green);font-weight:800;flex-shrink:0;margin-top:1px}
+    .plan-features li.x::before{content:"–";color:var(--gray4)}
+    .plan-features li.x{color:var(--gray4)}
+    .plan-features li.highlight{color:var(--navy);font-weight:600}
+    .plan-features li.highlight::before{content:"🌏";font-size:.8rem}
+    .plan-btn{width:100%;padding:12px;border-radius:24px;font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s;border:none;text-decoration:none;display:block;text-align:center}
+    .plan-btn.free-btn{background:var(--cream2);color:var(--gray2)}
+    .plan-btn.free-btn:hover{background:var(--cream3)}
+    .plan-btn.basic-btn{background:var(--green);color:#fff}
+    .plan-btn.basic-btn:hover{background:var(--green2)}
+    .plan-btn.pro-btn{background:var(--navy);color:#fff}
+    .plan-btn.pro-btn:hover{background:var(--navy2)}
+    .promo-notice{margin-top:24px;background:var(--gold2);border-radius:var(--r2);padding:16px 20px;display:flex;gap:12px;align-items:flex-start;border-left:4px solid var(--gold)}
+    .promo-notice p{font-size:.84rem;color:#5a3a00;line-height:1.7}
+    .selector-box{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:32px;margin-top:32px}
+    .selector-box h3{font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--navy)}
+    .selector-box>p{font-size:.84rem;color:var(--gray2);margin-bottom:20px}
+    .analysis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-bottom:16px}
+    .analysis-item{border:1.5px solid var(--cream3);border-radius:var(--r2);padding:11px 13px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:9px;user-select:none}
+    .analysis-item:hover{border-color:var(--green);background:var(--green3)}
+    .analysis-item.sel{border-color:var(--green);background:var(--green3)}
+    .ai-icon{font-size:1.25rem;flex-shrink:0}
+    .ai-text strong{font-size:.8rem;display:block;color:var(--gray1)}
+    .ai-text span{font-size:.7rem;color:var(--gray3)}
+    .ai-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--cream3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;transition:.2s;margin-left:auto}
+    .analysis-item.sel .ai-check{background:var(--green);border-color:var(--green);color:#fff}
+    .sel-count{font-size:.82rem;color:var(--gray3);margin-bottom:14px}
+    .sel-count em{color:var(--green);font-weight:700;font-style:normal}
+    .pref-area label{font-size:.82rem;font-weight:600;color:var(--gray2);display:block;margin-bottom:6px}
+    .pref-area textarea{width:100%;border:1.5px solid var(--cream3);border-radius:var(--r2);padding:10px 14px;font-size:.84rem;color:var(--gray1);resize:vertical;min-height:80px;font-family:inherit;transition:.2s}
+    .pref-area textarea:focus{outline:none;border-color:var(--green)}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:20px}
+    .step{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:24px 18px;text-align:center}
+    .step-n{width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:.95rem;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+    .step h3{font-size:.9rem;font-weight:700;margin-bottom:7px;color:var(--navy)}
+    .step p{font-size:.8rem;color:var(--gray2)}
+    .contact-box{background:var(--navy);border-radius:var(--r);padding:48px 36px;text-align:center;color:#fff}
+    .contact-box h2{font-size:1.6rem;font-weight:800;margin-bottom:12px}
+    .contact-box>p{color:rgba(255,255,255,.7);font-size:.92rem;margin-bottom:12px;max-width:480px;margin-left:auto;margin-right:auto}
+    .contact-steps{display:flex;flex-direction:column;gap:8px;max-width:420px;margin:0 auto 28px;text-align:left}
+    .contact-step-item{display:flex;align-items:flex-start;gap:10px;font-size:.84rem;color:rgba(255,255,255,.75)}
+    .contact-step-num{width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+    .contact-cta-btn{display:inline-block;background:var(--green);color:#fff;border:none;border-radius:28px;padding:16px 44px;font-size:1.05rem;font-weight:700;cursor:pointer;text-decoration:none;transition:.2s;box-shadow:0 4px 18px rgba(107,158,112,.4)}
+    .contact-cta-btn:hover{background:var(--green2);transform:translateY(-1px)}
+    .contact-note{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:14px}
+    .faq-list{display:flex;flex-direction:column;gap:10px}
+    .faq-item{background:#fff;border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden}
+    .faq-q{padding:16px 20px;font-weight:600;font-size:.9rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:.2s}
+    .faq-q:hover{color:var(--green)}
+    .faq-icon{font-size:1rem;transition:transform .25s;flex-shrink:0}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;font-size:.85rem;color:var(--gray2);line-height:1.7;padding:0 20px}
+    .faq-item.open .faq-a{max-height:300px;padding:0 20px 16px}
+    .faq-item.open .faq-icon{transform:rotate(45deg)}
+    footer{background:var(--gray1);color:#888;padding:40px 24px;text-align:center;font-size:.8rem;line-height:2}
+    .footer-brand{color:#fff;font-weight:800;font-size:1rem;margin-bottom:6px}
+    .footer-links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+    .footer-links a{color:#aaa;text-decoration:none}
+    .footer-links a:hover{color:var(--green)}
+    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+    .lightbox.open{display:flex}
+    .lightbox img{max-width:92vw;max-height:92vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.6);cursor:default}
+    .lightbox-close{position:absolute;top:18px;right:22px;color:#fff;font-size:2rem;cursor:pointer;line-height:1;opacity:.8}
+    .lightbox-close:hover{opacity:1}
+    .fi{opacity:0;transform:translateY(18px);transition:opacity .5s,transform .5s}
+    .fi.vis{opacity:1;transform:none}
+    @media(max-width:640px){.sec{padding:44px 16px}.contact-box{padding:32px 20px}.selector-box{padding:20px}}
+  </style>
+</head>
+<body>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()"/>
+</div>
+
+<div class="promo-banner" id="promo-banner"></div>
+
+<nav>
+  <a class="nav-logo" href="#">✦ <em>AI</em> Style Guide</a>
+  <div class="nav-r">
+    <button class="lang-btn on" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" onclick="setLang('ja')">日本語</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <a href="#" id="nav-cta" target="_blank" class="nav-btn"></a>
+  </div>
+</nav>
+
+<section class="hero fi">
+  <div class="hero-badge" id="hero-badge"></div>
+  <h1 id="hero-h1"></h1>
+  <p class="hero-sub" id="hero-sub"></p>
+  <div class="hero-btns">
+    <a href="#" id="hero-btn1" target="_blank" class="btn-g"></a>
+    <a href="#plans" class="btn-n" id="hero-btn2"></a>
+    <a href="#samples" class="btn-o" id="hero-btn3"></a>
+  </div>
+  <div class="ba-card">
+    <div class="ba-side">
+      <div class="ba-label">BEFORE</div>
+      <img class="ba-photo" src="images/before.jpg" alt="Before"/>
+      <div class="ba-footer">
+        <div class="ba-tags" id="ba-tags-b"></div>
+        <p class="ba-desc" id="ba-before-desc"></p>
+      </div>
+    </div>
+    <div class="ba-side after">
+      <div class="ba-label">AFTER</div>
+      <img class="ba-photo" src="images/after.jpg" alt="After"/>
+      <div class="ba-footer">
+        <div class="ba-tags" id="ba-tags-a"></div>
+        <p class="ba-desc" id="ba-after-desc"></p>
+      </div>
+    </div>
+  </div>
+  <div class="trust-row">
+    <span class="trust-item" id="tr1"></span>
+    <span class="trust-item" id="tr2"></span>
+    <span class="trust-item" id="tr3"></span>
+    <span class="trust-item" id="tr4"></span>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<section class="sec fi" id="free-preview-sec">
+  <div class="sec-hd">
+    <h2 id="free-h2"></h2>
+    <p id="free-p"></p>
+  </div>
+  <div class="free-sample">
+    <div class="free-sample-header">
+      <span id="free-sample-label"></span>
+      <span class="free-sample-badge" id="free-sample-badge"></span>
+    </div>
+    <img src="images/test.png" alt="Free preview sample" onclick="openLightbox('images/test.png')"/>
+  </div>
+  <p style="text-align:center;font-size:.78rem;color:var(--gray3);margin-top:12px" id="free-disclaimer"></p>
+</section>
+
+<hr class="div"/>
+
+<section class="sec fi" id="samples">
+  <div class="sec-hd">
+    <h2 id="samples-h2"></h2>
+    <p id="samples-p"></p>
+  </div>
+  <div class="samples-grid" id="samples-grid"></div>
+  <p style="text-align:center;font-size:.78rem;color:var(--gray3);margin-top:16px" id="samples-disclaimer"></p>
+</section>
+
+<hr class="div"/>
+
+<section class="sec fi" id="plans">
+  <div class="sec-hd">
+    <h2 id="plans-h2"></h2>
+    <p id="plans-p"></p>
+  </div>
+  <div class="plans-grid" id="plans-grid"></div>
+  <div class="promo-notice">
+    <div style="font-size:1.3rem;flex-shrink:0">⚠️</div>
+    <p id="promo-notice-text"></p>
+  </div>
+  <div class="report-structure" id="report-structure-box">
+    <div class="rs-header">📄 <span id="rs-title"></span></div>
+    <div id="rs-rows"></div>
+  </div>
+  <div class="selector-box">
+    <h3 id="sel-title"></h3>
+    <p id="sel-desc"></p>
+    <div class="analysis-grid" id="analysis-grid"></div>
+    <div class="sel-count" id="sel-count"></div>
+    <div class="pref-area">
+      <label id="pref-label"></label>
+      <textarea id="pref-input"></textarea>
+    </div>
+    <div style="margin-top:16px">
+      <a href="#" id="sel-submit-btn" target="_blank" class="btn-g" style="font-size:.9rem;padding:12px 28px"></a>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<section class="sec fi">
+  <div class="sec-hd"><h2 id="how-h2"></h2><p id="how-p"></p></div>
+  <div class="steps" id="steps-container"></div>
+</section>
+
+<hr class="div"/>
+
+<section class="sec fi" id="contact">
+  <div class="contact-box">
+    <h2 id="contact-h2"></h2>
+    <p id="contact-p"></p>
+    <div class="contact-steps" id="contact-steps"></div>
+    <a href="#" id="contact-cta-btn" target="_blank" class="contact-cta-btn"></a>
+    <p class="contact-note" id="contact-note"></p>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<section class="sec fi">
+  <div class="sec-hd"><h2 id="faq-h2"></h2></div>
+  <div class="faq-list" id="faq-list"></div>
+</section>
+
+<footer>
+  <div class="footer-brand">✦ AI Style Guide</div>
+  <div class="footer-links">
+    <a href="privacy.html" id="f-privacy"></a>
+    <a href="tokusho.html" id="f-tokusho"></a>
+    <a href="terms.html" id="f-terms"></a>
+    <a href="mailto:aistyleguild@gmail.com" id="f-contact"></a>
+  </div>
+  <div id="f-copy"></div>
+</footer>
+
+<script>
+const FORM_URL={
+  zh:'https://forms.gle/rRjm6UkogH8xStDSA',
+  ja:'https://forms.gle/bYMN852yXr4yja148',
+  en:'https://forms.gle/PGmxo1wwnmNfC9qv8'
+};
+const STRIPE_BASIC='https://buy.stripe.com/9B628tc7j2Gsc6EcD1bQY00';
+const STRIPE_MONTHLY='https://buy.stripe.com/7sY6oJdbn0ykfiQdH5bQY01';
+
+const T={
+  zh:{
+    promoBanner:"🎉 早期优惠期间 · 限时折扣价格 · 名额有限，涨价前锁定",
+    navCta:"立即申请",badge:"✦ AI 辅助 · 人工审核 · 邮件交付",
+    h1:`看见更好的自己，<br/><em>从一张照片开始。</em>`,
+    sub:"发型 · 眼镜 · 穿搭 · 配色 · 配饰，AI 辅助分析，由我人工整理成报告，通过邮件交付。",
+    btn1:"免费获取预览",btn2:"查看付费套餐",btn3:"查看效果样品",
+    baTagsB:["随意穿搭","普通镜框","发型未优化"],
+    baTagsA:["矩形镜框","侧分短发","深色西装","职场形象"],
+    baBefore:"日常状态，未经形象优化",baAfter:"AI 分析后的风格建议方向",
+    trust:["照片不公开展示","明确说明 AI 使用","非专业诊断","不评分颜值"],
+    freeH2:"免费预览是什么样的？",freeP:"申请免费预览后，你会收到一张像这样的综合风格示意图",
+    freeSampleLabel:"🌱 免费预览样品 · 运营者本人示例 · AI 辅助生成",freeSampleBadge:"免费",
+    freeDisclaimer:"※ 示意图为风格参考，不代表实际效果保证。点击图片可放大查看。",
+    samplesH2:"付费报告样品",samplesP:"以下为真实付费报告示例（运营者本人，AI 辅助生成）· 点击放大查看",
+    samplesDisclaimer:"※ 报告内容由 AI 辅助生成，运营者人工整理审核。风格建议仅供参考，非专业诊断。",
+    samples:[
+      {cls:"c1",img:"images/glass.png",     title:"🕶 眼镜推荐报告",  desc:"根据脸型比例，推荐最适合的镜框形状与风格。",          pills:["脸型分析","镜框推荐","效果图"],   badge:"付费样品"},
+      {cls:"c2",img:"images/hair.png",      title:"💇 发型分析报告",  desc:"分析脸型轮廓，推荐最适合的发型风格与应避免的发型。",  pills:["发型推荐","脸型匹配","效果图"],   badge:"付费样品"},
+      {cls:"c3",img:"images/outfit.png",    title:"👗 穿搭风格报告",  desc:"分析现有穿搭风格，给出升级建议与关键单品推荐。",      pills:["风格分析","单品推荐","配色"],     badge:"付费样品"},
+      {cls:"c4",img:"images/color.png",     title:"🎨 个人色彩分析",  desc:"分析肤色与季节色系，推荐最适合的服装配色方向。",      pills:["季节色系","配色推荐","效果图"],   badge:"付费样品"},
+      {cls:"c5",img:"images/face.png",      title:"🔬 面部特征分析",  desc:"面部比例测量、脸型识别与形象提升参考方向。",          pills:["比例分析","脸型识别","提升建议"], badge:"付费样品"},
+      {cls:"c6",img:"images/accessory.png", title:"💍 配饰搭配指南",  desc:"根据脸型与穿搭风格，推荐最适合的首饰与配件组合。",    pills:["首饰推荐","配件搭配","风格匹配"], badge:"付费样品"},
+      {cls:"c7",img:"images/travel.jpg",    title:"🌏 旅行合成照",    desc:"月订阅专属：将你的最佳形象与旅行景点合成，留下专属纪念照。",pills:["月订阅专属","AI 合成","景点定制"],badge:"月订阅专属",special:true},
+    ],
+    plansH2:"选择适合你的套餐",plansP:"从免费预览开始，随时升级到完整报告",
+    plans:[
+      {cls:"free",icon:"🌱",name:"免费预览",price:"¥0",orig:null,unit:"JPY",delivery:"有空即发，无固定时间",promoTag:null,
+       features:["1张综合风格示意图","粗略方向建议","邮件交付","不含详细分析"],fc:["","","","x"],
+       btn:"申请免费预览",btnCls:"free-btn",ribbon:null,stripeUrl:null},
+      {cls:"basic",icon:"⭐",name:"基础版",price:"¥1,580",orig:"¥3,000",unit:"JPY",delivery:"2-3 工作日交付",promoTag:"限时优惠价",
+       features:["自选 3-5 项分析","可填写场合与偏好","详细 PDF 报告（约5-7页）","效果示意图","1次追问回复"],fc:["","","","",""],
+       btn:"立即购买 →",btnCls:"basic-btn",ribbon:{text:"最受欢迎",cls:"green"},stripeUrl:STRIPE_BASIC},
+      {cls:"pro",icon:"👑",name:"月订阅",price:"¥2,980",orig:"¥5,000",unit:"JPY/月",delivery:"3-5 工作日，优先处理",promoTag:"限时优惠价",
+       features:["完整 8 项详细分析","每月可提交新需求","完整 PDF 报告（约10页）","全部效果图","2次追问回复","优先处理","🌏 旅行合成照（每月1张）"],fc:["","","","","","","highlight"],
+       btn:"立即订阅 →",btnCls:"pro-btn",ribbon:{text:"完整版",cls:"navy"},stripeUrl:STRIPE_MONTHLY},
+    ],
+    promoNotice:"<strong>早期优惠说明：</strong>目前正处于服务上线初期，价格为优惠试行价。随着用户增多、需求增加，价格可能会阶段性上调。现在订购可锁定当前价格，感谢早期用户的支持与信任。",
+    rsTitle:"月订阅完整报告结构（约10页）",
+    rsRows:[
+      {num:"封",special:true,  text:"封面",          sub:"姓名 · 分析日期 · 服务说明",     pages:"1页"},
+      {num:"总",special:true,  text:"总览页",         sub:"8项核心结论速览表",               pages:"1页"},
+      {num:"1", special:false, text:"🎨 个人色彩分析",sub:"季节色系 · 推荐色板 · 避免色",   pages:"1页"},
+      {num:"2", special:false, text:"💇 发型分析",    sub:"脸型匹配 · 推荐发型 · 效果图",   pages:"1页"},
+      {num:"3", special:false, text:"👗 穿搭风格",    sub:"风格定位 · 单品推荐 · 配色",     pages:"1页"},
+      {num:"4", special:false, text:"🕶 眼镜推荐",    sub:"镜框形状 · 推荐款式 · 效果图",   pages:"1页"},
+      {num:"5", special:false, text:"💍 配饰搭配",    sub:"首饰推荐 · 配件组合",            pages:"1页"},
+      {num:"6", special:false, text:"✨ 面部美学",    sub:"黄金比例 · 改善方向",            pages:"1页"},
+      {num:"7", special:false, text:"🔬 面部特征分析",sub:"比例测量 · 脸型识别",            pages:"1页"},
+      {num:"8", special:false, text:"💪 体型分析",    sub:"体型识别 · 穿搭修饰建议",        pages:"1页"},
+      {num:"🌏",special:false, text:"旅行合成照",     sub:"最佳形象 × 景点合成 · 专属纪念照",pages:"1张",travel:true},
+      {num:"✦", special:true,  text:"行动建议页",     sub:"优先改善的3件事 · 购物清单方向", pages:"1页"},
+    ],
+    selTitle:"🎯 基础版：选择你最需要的分析项目",selDesc:"最多选择 5 项，可在下方填写你的场合偏好或个人需求",
+    selSubmit:"前往申请表单 →",prefLabel:"📝 补充你的需求（可选）",
+    prefPH:"例如：我主要在商务场合，偏好简约风格，不喜欢太花哨的颜色…",
+    analyses:[
+      {icon:"🎨",title:"个人色彩分析",sub:"季节色系与配色"},
+      {icon:"💇",title:"发型分析",sub:"脸型匹配发型"},
+      {icon:"👗",title:"穿搭风格指南",sub:"服装与风格建议"},
+      {icon:"🕶",title:"眼镜推荐",sub:"镜框形状匹配"},
+      {icon:"💍",title:"配饰搭配指南",sub:"珠宝与配饰"},
+      {icon:"✨",title:"面部美学报告",sub:"黄金比例分析"},
+      {icon:"🔬",title:"面部特征分析",sub:"比例与测量"},
+      {icon:"💪",title:"体型分析",sub:"体态与体型评估"},
+    ],
+    howH2:"服务流程",howP:"简单四步，获得你的专属风格建议",
+    steps:[
+      {n:"1",title:"提交申请",desc:"点击申请按钮，填写表单，选择套餐并说明你的场合与偏好。"},
+      {n:"2",title:"发送照片",desc:"提交表单后，通过邮件发送 1–3 张照片至 aistyleguild@gmail.com。"},
+      {n:"3",title:"AI 分析 + 人工审核",desc:"我使用 AI 结合你的照片与需求生成建议，再人工审核整理为 PDF 报告。"},
+      {n:"4",title:"邮件交付",desc:"报告通过邮件发送，基础版 2-3 工作日，月订阅优先处理。"},
+    ],
+    contactH2:"📩 申请你的风格报告",contactP:"点击下方按钮，填写表单即可完成申请。",
+    contactSteps:[
+      "填写表单（姓名、邮箱、套餐、偏好）",
+      "提交后通过邮件发送 1–3 张照片至 aistyleguild@gmail.com",
+      "我会在 1–2 个工作日内回复确认，付款后开始制作报告",
+    ],
+    contactCtaBtn:"前往申请表单 →",
+    contactNote:"付款在确认后进行 · 照片仅用于生成报告，30天内删除",
+    faqH2:"常见问题",
+    faqs:[
+      {q:"现在的价格是正式价格吗？",a:"不是，目前是服务上线初期的优惠试行价（¥1,580 JPY / ¥2,980 JPY）。随着用户增多和运营成本增加，价格可能会阶段性上调。现在订购的用户可以锁定当前价格。"},
+      {q:"免费预览和付费报告有什么区别？",a:"免费预览是我有空时提供的一张综合风格示意图，给出大方向参考，没有详细分析。付费报告包含你选择的具体分析项目、详细建议、效果图和 PDF 文档。"},
+      {q:"旅行合成照是什么？",a:"月订阅专属福利。每月可提交一张旅行景点照片（或告知景点名称），我会将你的最佳形象与景点合成，生成一张专属旅行纪念照，通过邮件发送。图像由 AI 辅助生成，仅供个人纪念用途，不代表真实场景。"},
+      {q:"你会如何使用我的照片？",a:"照片仅用于生成你的个人风格建议，不会用于公开展示、营销或任何其他用途。报告交付后 30 天内删除。"},
+      {q:"AI 生成的建议准确吗？",a:"AI 辅助分析基于照片的视觉信息，存在一定局限性。我会人工审核所有内容，删除不合理的建议。这是风格探索的参考，不是专业诊断。"},
+      {q:"付款方式是什么？",a:"点击套餐的「立即购买」按钮，通过 Stripe 安全支付，支持信用卡付款。付款成功后请通过邮件发送照片至 aistyleguild@gmail.com。"},
+      {q:"月订阅如何取消？",a:"月订阅按月计费，下个月不续订只需提前通过邮件告知即可，无违约金。"},
+    ],
+    fPrivacy:"隐私政策",fTokusho:"特定商取引法表記",fTerms:"服务条款",fContact:"联系我们",
+    fCopy:"© 2026 AI Style Guide · AI 辅助生成 · 非专业诊断 · Henry Wang",
+  },
+  ja:{
+    promoBanner:"🎉 早期割引キャンペーン中 · 限定価格 · 値上げ前にお申し込みを",
+    navCta:"今すぐ申し込む",badge:"✦ AI補助 · 人工審査 · メール納品",
+    h1:`もっと自分らしいスタイルを、<br/><em>一枚の写真から。</em>`,
+    sub:"ヘアスタイル・メガネ・コーデ・カラー・アクセサリー。AI補助で分析し、PDFにまとめてメールでお届け。",
+    btn1:"無料プレビューを申し込む",btn2:"有料プランを見る",btn3:"サンプルを見る",
+    baTagsB:["カジュアルな服装","普通のフレーム","ヘア未最適化"],
+    baTagsA:["スクエアフレーム","サイドパート","ネイビースーツ","ビジネス向け"],
+    baBefore:"日常の状態、スタイル最適化前",baAfter:"AI分析後のスタイル提案方向",
+    trust:["写真を公開展示に使用しない","AI使用を明確に説明","専門診断ではない","ルックス評価なし"],
+    freeH2:"無料プレビューとは？",freeP:"無料プレビューを申し込むと、このような総合スタイル見本をお送りします",
+    freeSampleLabel:"🌱 無料プレビューサンプル · 運営者本人 · AI補助生成",freeSampleBadge:"無料",
+    freeDisclaimer:"※ 見本はスタイルの参考であり、実際の効果を保証するものではありません。クリックで拡大できます。",
+    samplesH2:"有料レポートサンプル",samplesP:"実際の有料レポートサンプル（運営者本人・AI補助生成）· クリックで拡大",
+    samplesDisclaimer:"※ レポート内容はAI補助生成・人工審査済みです。スタイル提案は参考情報であり、専門診断ではありません。",
+    samples:[
+      {cls:"c1",img:"images/glass.png",     title:"🕶 メガネガイドレポート",      desc:"顔型の比率に合う最適なフレームの形とスタイルを提案します。",       pills:["顔型分析","フレーム提案","ビジュアル"],  badge:"有料サンプル"},
+      {cls:"c2",img:"images/hair.png",      title:"💇 ヘアスタイル分析レポート",  desc:"顔型に合う最適なヘアスタイルと避けるべきスタイルを提案します。",   pills:["ヘア提案","顔型マッチ","ビジュアル"],    badge:"有料サンプル"},
+      {cls:"c3",img:"images/outfit.png",    title:"👗 コーデスタイルレポート",     desc:"現在のコーデを分析し、アップグレード提案とキーアイテムを提案。",     pills:["スタイル分析","アイテム提案","カラー"],  badge:"有料サンプル"},
+      {cls:"c4",img:"images/color.png",     title:"🎨 パーソナルカラー分析",       desc:"肌色とシーズンカラーを分析し、最も似合う服の配色を提案します。",     pills:["シーズンカラー","配色提案","ビジュアル"],badge:"有料サンプル"},
+      {cls:"c5",img:"images/face.png",      title:"🔬 顔の特徴分析レポート",       desc:"顔の比率測定・顔型識別・スタイルアップの参考方向を提供します。",     pills:["比率分析","顔型識別","改善提案"],        badge:"有料サンプル"},
+      {cls:"c6",img:"images/accessory.png", title:"💍 アクセサリーガイド",         desc:"顔型とコーデに合う最適なジュエリーとアクセサリーの組み合わせを提案。",pills:["ジュエリー提案","配件マッチ","スタイル"],badge:"有料サンプル"},
+      {cls:"c7",img:"images/travel.jpg",    title:"🌏 旅行合成フォト",             desc:"月額サブスク限定：あなたのベストスタイルと旅行スポットを合成した、特別な記念フォトをお届け。",pills:["月額限定","AI合成","スポット指定可"],badge:"月額限定",special:true},
+    ],
+    plansH2:"プランを選ぶ",plansP:"無料プレビューから始めて、いつでもアップグレード",
+    plans:[
+      {cls:"free",icon:"🌱",name:"無料プレビュー",price:"¥0",orig:null,unit:"JPY",delivery:"空き次第送付、時間未定",promoTag:null,
+       features:["総合スタイル見本1枚","大まかな方向性提案","メール納品","詳細分析なし"],fc:["","","","x"],
+       btn:"無料プレビューを申し込む",btnCls:"free-btn",ribbon:null,stripeUrl:null},
+      {cls:"basic",icon:"⭐",name:"ベーシック",price:"¥1,580",orig:"¥3,000",unit:"JPY",delivery:"2〜3営業日で納品",promoTag:"期間限定割引",
+       features:["3〜5項目を自由選択","シーンや好みを記入可","詳細PDFレポート（約5〜7ページ）","スタイルビジュアル付き","追加質問1回対応"],fc:["","","","",""],
+       btn:"今すぐ購入 →",btnCls:"basic-btn",ribbon:{text:"人気No.1",cls:"green"},stripeUrl:STRIPE_BASIC},
+      {cls:"pro",icon:"👑",name:"月額サブスク",price:"¥2,980",orig:"¥5,000",unit:"JPY/月",delivery:"3〜5営業日・優先処理",promoTag:"期間限定割引",
+       features:["全8項目の詳細分析","毎月新しいリクエスト可","完全PDFレポート（約10ページ）","全ビジュアル画像付き","追加質問2回対応","優先処理","🌏 旅行合成フォト（月1枚）"],fc:["","","","","","","highlight"],
+       btn:"今すぐ登録 →",btnCls:"pro-btn",ribbon:{text:"コンプリート",cls:"navy"},stripeUrl:STRIPE_MONTHLY},
+    ],
+    promoNotice:"<strong>早期割引について：</strong>現在はサービス開始初期の特別割引価格（¥1,580 JPY / ¥2,980 JPY）です。ユーザー数の増加に伴い、価格は段階的に改定される可能性があります。今お申し込みいただくと現在の価格を維持できます。",
+    rsTitle:"月額サブスク完全レポート構成（約10ページ）",
+    rsRows:[
+      {num:"表",special:true,  text:"表紙",              sub:"お名前 · 分析日 · サービス説明",        pages:"1P"},
+      {num:"総",special:true,  text:"総合サマリー",       sub:"8項目の主要結論一覧",                  pages:"1P"},
+      {num:"1", special:false, text:"🎨 パーソナルカラー",sub:"シーズンカラー · 配色提案 · 避ける色",  pages:"1P"},
+      {num:"2", special:false, text:"💇 ヘアスタイル",    sub:"顔型マッチ · 推奨スタイル · ビジュアル",pages:"1P"},
+      {num:"3", special:false, text:"👗 コーデスタイル",  sub:"スタイル定位 · キーアイテム · カラー",  pages:"1P"},
+      {num:"4", special:false, text:"🕶 メガネガイド",    sub:"フレーム形状 · 推奨スタイル · ビジュアル",pages:"1P"},
+      {num:"5", special:false, text:"💍 アクセサリー",    sub:"ジュエリー提案 · アクセサリー組み合わせ",pages:"1P"},
+      {num:"6", special:false, text:"✨ 顔の美学",        sub:"黄金比 · 改善方向",                    pages:"1P"},
+      {num:"7", special:false, text:"🔬 顔の特徴分析",    sub:"比率測定 · 顔型識別",                  pages:"1P"},
+      {num:"8", special:false, text:"💪 体型分析",        sub:"体型識別 · コーデ修正提案",             pages:"1P"},
+      {num:"🌏",special:false, text:"旅行合成フォト",     sub:"ベストスタイル × スポット合成 · 記念フォト",pages:"1枚",travel:true},
+      {num:"✦", special:true,  text:"アクションガイド",   sub:"優先改善3項目 · ショッピングリスト方向",pages:"1P"},
+    ],
+    selTitle:"🎯 ベーシック：分析項目を選んでください",selDesc:"最大5項目まで選択可。下欄にシーンや好みを記入できます",
+    selSubmit:"申し込みフォームへ →",prefLabel:"📝 ご要望を記入（任意）",
+    prefPH:"例：主にビジネスシーンで使用、シンプルなスタイルが好み…",
+    analyses:[
+      {icon:"🎨",title:"パーソナルカラー分析",sub:"シーズンカラー＆配色"},
+      {icon:"💇",title:"ヘアスタイル分析",sub:"顔型に合うスタイル"},
+      {icon:"👗",title:"コーデスタイルガイド",sub:"服装＆スタイル提案"},
+      {icon:"🕶",title:"メガネガイド",sub:"フレーム形状マッチング"},
+      {icon:"💍",title:"アクセサリーガイド",sub:"ジュエリー＆アクセサリー"},
+      {icon:"✨",title:"顔の美学レポート",sub:"黄金比分析"},
+      {icon:"🔬",title:"顔の特徴分析",sub:"プロポーション＆計測"},
+      {icon:"💪",title:"体型分析",sub:"体組成＆姿勢評価"},
+    ],
+    howH2:"ご利用の流れ",howP:"4ステップで、あなただけのスタイル提案を",
+    steps:[
+      {n:"1",title:"申し込み",desc:"申し込みボタンをクリックし、フォームに記入してプランを選択してください。"},
+      {n:"2",title:"写真を送る",desc:"フォーム送信後、写真1〜3枚を aistyleguild@gmail.com にメールで送付してください。"},
+      {n:"3",title:"AI分析＋人工審査",desc:"AIを使って写真とご要望をもとに提案を生成し、内容を確認してPDFにまとめます。"},
+      {n:"4",title:"メール納品",desc:"レポートをメールでお送りします。ベーシックは2〜3営業日、月額は優先処理。"},
+    ],
+    contactH2:"📩 スタイルレポートを申し込む",contactP:"下のボタンからフォームにアクセスしてお申し込みください。",
+    contactSteps:[
+      "フォームに記入（お名前・メール・プラン・ご要望）",
+      "フォーム送信後、写真1〜3枚を aistyleguild@gmail.com にメールで送付",
+      "1〜2営業日以内に確認メールをお送りします。お支払い後に制作開始",
+    ],
+    contactCtaBtn:"申し込みフォームへ →",
+    contactNote:"お支払いは確認後 · 写真はレポート納品後30日以内に削除",
+    faqH2:"よくある質問",
+    faqs:[
+      {q:"現在の価格は正式価格ですか？",a:"いいえ、現在はサービス開始初期の特別割引価格（¥1,580 JPY / ¥2,980 JPY）です。ユーザー数の増加に伴い、価格は段階的に改定される可能性があります。"},
+      {q:"無料プレビューと有料レポートの違いは？",a:"無料プレビューは空き時間に提供する総合スタイル見本1枚です。有料レポートは選択した分析項目の詳細な提案・ビジュアル・PDFドキュメントが含まれます。"},
+      {q:"旅行合成フォトとは何ですか？",a:"月額サブスク限定の特典です。毎月、旅行スポットの写真（または行き先名）をお送りいただくと、あなたのベストスタイルとスポットを合成した記念フォトをお届けします。AI補助生成のため、個人的な記念用途のみとなります。"},
+      {q:"写真はどのように使用されますか？",a:"写真はスタイル提案の生成にのみ使用されます。公開展示等には一切使用しません。納品後30日以内に削除します。"},
+      {q:"AI分析の精度は？",a:"AI補助分析は写真の視覚情報に基づいており、限界があります。すべての内容を人工審査し、不合理な提案は削除します。"},
+      {q:"お支払い方法は？",a:"プランの「今すぐ購入」ボタンからStripeで安全にお支払いいただけます。クレジットカード対応。お支払い後、写真を aistyleguild@gmail.com にメールでお送りください。"},
+      {q:"月額サブスクはいつでも解約できますか？",a:"翌月の更新が不要な場合は、事前にメールでお知らせください。違約金はありません。"},
+    ],
+    fPrivacy:"プライバシーポリシー",fTokusho:"特定商取引法に基づく表記",fTerms:"利用規約",fContact:"お問い合わせ",
+    fCopy:"© 2026 AI Style Guide · AI補助生成 · 専門診断ではありません · Henry Wang",
+  },
+  en:{
+    promoBanner:"🎉 Early Bird Pricing · Limited-Time Discount · Lock in your rate before prices rise",
+    navCta:"Apply Now",badge:"✦ AI-Assisted · Human-Reviewed · Email Delivery",
+    h1:`See a better version of yourself,<br/><em>starting with one photo.</em>`,
+    sub:"Hairstyle · Glasses · Outfit · Color · Accessories. AI-assisted, human-reviewed, delivered by email.",
+    btn1:"Get Free Preview",btn2:"View Paid Plans",btn3:"See Samples",
+    baTagsB:["Casual outfit","Basic frames","Unstyled hair"],
+    baTagsA:["Rect frames","Side part","Navy blazer","Business look"],
+    baBefore:"Everyday look, before style optimization",baAfter:"Style direction after AI analysis",
+    trust:["Photos not used publicly","AI usage clearly disclosed","Not professional diagnosis","No appearance scoring"],
+    freeH2:"What does the free preview look like?",freeP:"After applying, you'll receive a combined style visual like this one",
+    freeSampleLabel:"🌱 Free Preview Sample · Operator's own · AI-assisted",freeSampleBadge:"Free",
+    freeDisclaimer:"※ Visual is for style reference only and does not guarantee results. Click to enlarge.",
+    samplesH2:"Paid Report Samples",samplesP:"Real paid report samples (operator's own, AI-assisted) · Click to enlarge",
+    samplesDisclaimer:"※ Report content is AI-assisted and human-reviewed. Style suggestions are for reference only, not professional diagnosis.",
+    samples:[
+      {cls:"c1",img:"images/glass.png",     title:"🕶 Glasses Guide",       desc:"Recommends the most flattering frame shapes based on your facial proportions.",         pills:["Face Shape","Frame Match","Visual"],     badge:"Paid Sample"},
+      {cls:"c2",img:"images/hair.png",      title:"💇 Hairstyle Analysis",  desc:"Analyzes face shape and recommends the most flattering hairstyles.",                    pills:["Hair Recs","Face Match","Visual"],       badge:"Paid Sample"},
+      {cls:"c3",img:"images/outfit.png",    title:"👗 Outfit Style Report", desc:"Analyzes your current style and provides upgrade suggestions and key item recs.",        pills:["Style Analysis","Key Items","Colors"],   badge:"Paid Sample"},
+      {cls:"c4",img:"images/color.png",     title:"🎨 Color Analysis",      desc:"Analyzes skin tone and seasonal color type to recommend the most flattering colors.",    pills:["Season Type","Color Recs","Visual"],     badge:"Paid Sample"},
+      {cls:"c5",img:"images/face.png",      title:"🔬 Facial Analysis",     desc:"Facial proportion measurements, face shape identification, and style enhancement tips.", pills:["Proportions","Face Shape","Tips"],       badge:"Paid Sample"},
+      {cls:"c6",img:"images/accessory.png", title:"💍 Accessory Guide",     desc:"Recommends the best jewelry and accessory combinations for your face shape and style.",  pills:["Jewelry Recs","Accessory Match","Style"],badge:"Paid Sample"},
+      {cls:"c7",img:"images/travel.jpg",    title:"🌏 Travel Composite Photo",desc:"Monthly exclusive: your best-styled self composited with a travel landmark — a personalized keepsake photo.",pills:["Monthly Only","AI Composite","Any Landmark"],badge:"Monthly Exclusive",special:true},
+    ],
+    plansH2:"Choose Your Plan",plansP:"Start free, upgrade anytime",
+    plans:[
+      {cls:"free",icon:"🌱",name:"Free Preview",price:"¥0",orig:null,unit:"JPY",delivery:"Sent when available, no fixed time",promoTag:null,
+       features:["1 combined style visual","General direction only","Email delivery","No detailed analysis"],fc:["","","","x"],
+       btn:"Get Free Preview",btnCls:"free-btn",ribbon:null,stripeUrl:null},
+      {cls:"basic",icon:"⭐",name:"Basic",price:"¥1,580",orig:"¥3,000",unit:"JPY",delivery:"Delivered in 2–3 business days",promoTag:"Limited-Time Price",
+       features:["Choose 3–5 analysis types","Add occasion & preferences","Detailed PDF report (~5–7 pages)","Style visuals included","1 follow-up reply"],fc:["","","","",""],
+       btn:"Buy Now →",btnCls:"basic-btn",ribbon:{text:"Most Popular",cls:"green"},stripeUrl:STRIPE_BASIC},
+      {cls:"pro",icon:"👑",name:"Monthly",price:"¥2,980",orig:"¥5,000",unit:"JPY/mo",delivery:"3–5 business days, priority",promoTag:"Limited-Time Price",
+       features:["All 8 analysis types","Monthly new requests","Full PDF report (~10 pages)","All visuals included","2 follow-up replies","Priority processing","🌏 Travel composite photo (1/month)"],fc:["","","","","","","highlight"],
+       btn:"Subscribe Now →",btnCls:"pro-btn",ribbon:{text:"Complete",cls:"navy"},stripeUrl:STRIPE_MONTHLY},
+    ],
+    promoNotice:"<strong>Early Bird Notice:</strong> Current prices (¥1,580 JPY / ¥2,980 JPY) are introductory launch rates. As demand grows, prices may be adjusted upward. Subscribing now locks in your current rate. Thank you for your early support.",
+    rsTitle:"Monthly Plan — Full Report Structure (~10 pages)",
+    rsRows:[
+      {num:"C", special:true,  text:"Cover Page",         sub:"Name · Date · Service overview",             pages:"1p"},
+      {num:"S", special:true,  text:"Summary Overview",   sub:"Key conclusions from all 8 analyses",        pages:"1p"},
+      {num:"1", special:false, text:"🎨 Color Analysis",  sub:"Season type · Palette · Colors to avoid",    pages:"1p"},
+      {num:"2", special:false, text:"💇 Hairstyle",       sub:"Face match · Recommended styles · Visual",   pages:"1p"},
+      {num:"3", special:false, text:"👗 Outfit Style",    sub:"Style direction · Key items · Colors",       pages:"1p"},
+      {num:"4", special:false, text:"🕶 Glasses Guide",   sub:"Frame shapes · Recommendations · Visual",    pages:"1p"},
+      {num:"5", special:false, text:"💍 Accessories",     sub:"Jewelry recs · Accessory combinations",      pages:"1p"},
+      {num:"6", special:false, text:"✨ Face Aesthetics", sub:"Golden ratio · Enhancement direction",       pages:"1p"},
+      {num:"7", special:false, text:"🔬 Facial Analysis", sub:"Proportions · Face shape ID",               pages:"1p"},
+      {num:"8", special:false, text:"💪 Physique",        sub:"Body type · Style correction tips",          pages:"1p"},
+      {num:"🌏",special:false, text:"Travel Composite",   sub:"Best style × Landmark · Keepsake photo",    pages:"1 photo",travel:true},
+      {num:"✦", special:true,  text:"Action Guide",       sub:"Top 3 priorities · Shopping list direction", pages:"1p"},
+    ],
+    selTitle:"🎯 Basic Plan: Choose your analysis types",selDesc:"Select up to 5 items. Add your occasion or preferences below.",
+    selSubmit:"Go to Application Form →",prefLabel:"📝 Add your preferences (optional)",
+    prefPH:"e.g. Mainly for business settings, prefer minimalist style…",
+    analyses:[
+      {icon:"🎨",title:"Color Analysis",sub:"Seasonal color & palette"},
+      {icon:"💇",title:"Hairstyle Analysis",sub:"Face shape matching"},
+      {icon:"👗",title:"Outfit Style Guide",sub:"Clothing & style tips"},
+      {icon:"🕶",title:"Glasses Guide",sub:"Frame shape matching"},
+      {icon:"💍",title:"Accessory Guide",sub:"Jewelry & accessories"},
+      {icon:"✨",title:"Aesthetics Report",sub:"Golden ratio analysis"},
+      {icon:"🔬",title:"Facial Analysis",sub:"Proportions & measurements"},
+      {icon:"💪",title:"Physique Analysis",sub:"Body type & posture"},
+    ],
+    howH2:"How It Works",howP:"Four simple steps to your personalized style guide",
+    steps:[
+      {n:"1",title:"Apply",desc:"Click the apply button and fill out the form with your plan and preferences."},
+      {n:"2",title:"Send Photos",desc:"After submitting, email 1–3 photos to aistyleguild@gmail.com."},
+      {n:"3",title:"AI Analysis + Human Review",desc:"I use AI with your photo and preferences to generate suggestions, then review and compile the PDF."},
+      {n:"4",title:"Email Delivery",desc:"Your report is sent by email. Basic: 2–3 days. Monthly: priority processing."},
+    ],
+    contactH2:"📩 Apply for Your Style Report",contactP:"Click the button below to access the form and apply.",
+    contactSteps:[
+      "Fill out the form (name, email, plan, preferences)",
+      "Email 1–3 photos to aistyleguild@gmail.com after submitting",
+      "I'll reply within 1–2 business days. Payment after confirmation.",
+    ],
+    contactCtaBtn:"Go to Application Form →",
+    contactNote:"Payment after confirmation · Photos deleted within 30 days of delivery",
+    faqH2:"FAQ",
+    faqs:[
+      {q:"Are these the final prices?",a:"No, ¥1,580 JPY and ¥2,980 JPY are introductory launch rates. As demand increases, prices may be adjusted upward. Subscribing now locks in your current rate."},
+      {q:"What's the difference between free and paid?",a:"The free preview is a single style visual I send when I have time. Paid reports include detailed analysis, specific suggestions, visuals, and a PDF document."},
+      {q:"What is the travel composite photo?",a:"A monthly exclusive perk. Each month, send me a photo of a travel landmark (or just tell me the location), and I'll composite your best-styled self into the scene as a personalized keepsake photo. AI-generated, for personal use only."},
+      {q:"How will my photo be used?",a:"Your photo is used solely to generate your style suggestions and will not be used publicly. I delete it within 30 days of delivering your report."},
+      {q:"How accurate is the AI analysis?",a:"AI analysis is based on visual information and has limitations. I manually review all content. This is a style reference, not a professional diagnosis."},
+      {q:"How do I pay?",a:"Click the 'Buy Now' button on your chosen plan to pay securely via Stripe. After payment, email your photos to aistyleguild@gmail.com."},
+      {q:"Can I cancel the monthly subscription?",a:"Just let me know by email before the next billing date. No cancellation fees."},
+    ],
+    fPrivacy:"Privacy Policy",fTokusho:"特定商取引法に基づく表記",fTerms:"Terms of Service",fContact:"Contact",
+    fCopy:"© 2026 AI Style Guide · AI-assisted · Not professional diagnosis · Henry Wang",
+  }
+};
+
+let lang='zh',selected=new Set(),MAX_SEL=5;
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('on');
+  document.documentElement.lang=l==='zh'?'zh':l==='ja'?'ja':'en';
+  render();
+}
+
+function render(){
+  const d=T[lang],fUrl=FORM_URL[lang];
+  document.getElementById('nav-cta').href=fUrl;
+  document.getElementById('hero-btn1').href=fUrl;
+  document.getElementById('sel-submit-btn').href=fUrl;
+  document.getElementById('contact-cta-btn').href=fUrl;
+  document.getElementById('promo-banner').textContent=d.promoBanner;
+  document.getElementById('nav-cta').textContent=d.navCta;
+  document.getElementById('hero-badge').textContent=d.badge;
+  document.getElementById('hero-h1').innerHTML=d.h1;
+  document.getElementById('hero-sub').textContent=d.sub;
+  document.getElementById('hero-btn1').textContent=d.btn1;
+  document.getElementById('hero-btn2').textContent=d.btn2;
+  document.getElementById('hero-btn3').textContent=d.btn3;
+  document.getElementById('ba-tags-b').innerHTML=d.baTagsB.map(t=>`<span class="ba-tag">${t}</span>`).join('');
+  document.getElementById('ba-tags-a').innerHTML=d.baTagsA.map(t=>`<span class="ba-tag good">${t}</span>`).join('');
+  document.getElementById('ba-before-desc').textContent=d.baBefore;
+  document.getElementById('ba-after-desc').textContent=d.baAfter;
+  ['tr1','tr2','tr3','tr4'].forEach((id,i)=>{document.getElementById(id).textContent=d.trust[i];});
+  document.getElementById('free-h2').textContent=d.freeH2;
+  document.getElementById('free-p').textContent=d.freeP;
+  document.getElementById('free-sample-label').textContent=d.freeSampleLabel;
+  document.getElementById('free-sample-badge').textContent=d.freeSampleBadge;
+  document.getElementById('free-disclaimer').textContent=d.freeDisclaimer;
+  document.getElementById('samples-h2').textContent=d.samplesH2;
+  document.getElementById('samples-p').textContent=d.samplesP;
+  document.getElementById('samples-disclaimer').textContent=d.samplesDisclaimer;
+  document.getElementById('samples-grid').innerHTML=d.samples.map(s=>`
+    <div class="sample-card" onclick="openLightbox('${s.img}')">
+      <div class="sample-thumb ${s.cls}">
+        <img src="${s.img}" alt="${s.title}" onerror="this.style.display='none'"/>
+        <span class="sample-badge-overlay">${s.badge}</span>
+      </div>
+      <div class="sample-body">
+        <h3>${s.title}</h3><p>${s.desc}</p>
+        <div class="sample-pills">${s.pills.map((p,i)=>`<span class="pill${s.special&&i===0?' special':''}">${p}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('plans-h2').textContent=d.plansH2;
+  document.getElementById('plans-p').textContent=d.plansP;
+  document.getElementById('plans-grid').innerHTML=d.plans.map(p=>`
+    <div class="plan-card ${p.cls}">
+      ${p.ribbon?`<div class="plan-ribbon ${p.ribbon.cls}">${p.ribbon.text}</div>`:''}
+      <div class="plan-icon">${p.icon}</div>
+      <div class="plan-name">${p.name}</div>
+      <div class="plan-price-row">
+        ${p.orig?`<span class="plan-price-orig">${p.orig}</span>`:''}
+        <span class="plan-price">${p.price}<span> ${p.unit}</span></span>
+        ${p.promoTag?`<span class="plan-promo-tag">🔥 ${p.promoTag}</span>`:''}
+      </div>
+      <div class="plan-delivery">${p.delivery}</div>
+      <ul class="plan-features">${p.features.map((f,i)=>`<li class="${p.fc[i]}">${f}</li>`).join('')}</ul>
+      <a href="${p.stripeUrl||fUrl}" target="_blank" class="plan-btn ${p.btnCls}">${p.btn}</a>
+    </div>`).join('');
+  document.getElementById('promo-notice-text').innerHTML=d.promoNotice;
+  document.getElementById('rs-title').textContent=d.rsTitle;
+  document.getElementById('rs-rows').innerHTML=d.rsRows.map(r=>`
+    <div class="rs-row">
+      <div class="rs-num ${r.special?'special':r.travel?'travel':''}">${r.num}</div>
+      <div class="rs-text">${r.text}<span>${r.sub}</span></div>
+      <div class="rs-pages">${r.pages}</div>
+    </div>`).join('');
+  document.getElementById('sel-title').textContent=d.selTitle;
+  document.getElementById('sel-desc').textContent=d.selDesc;
+  document.getElementById('sel-submit-btn').textContent=d.selSubmit;
+  document.getElementById('pref-label').textContent=d.prefLabel;
+  document.getElementById('pref-input').placeholder=d.prefPH;
+  selected.clear();
+  document.getElementById('analysis-grid').innerHTML=d.analyses.map((a,i)=>`
+    <div class="analysis-item" id="ai-${i}" onclick="toggleAnalysis(${i})">
+      <span class="ai-icon">${a.icon}</span>
+      <div class="ai-text"><strong>${a.title}</strong><span>${a.sub}</span></div>
+      <div class="ai-check" id="aic-${i}"></div>
+    </div>`).join('');
+  updateSelCount();
+  document.getElementById('how-h2').textContent=d.howH2;
+  document.getElementById('how-p').textContent=d.howP;
+  document.getElementById('steps-container').innerHTML=d.steps.map(s=>`
+    <div class="step"><div class="step-n">${s.n}</div><h3>${s.title}</h3><p>${s.desc}</p></div>`).join('');
+  document.getElementById('contact-h2').textContent=d.contactH2;
+  document.getElementById('contact-p').textContent=d.contactP;
+  document.getElementById('contact-steps').innerHTML=d.contactSteps.map((s,i)=>`
+    <div class="contact-step-item">
+      <div class="contact-step-num">${i+1}</div>
+      <span>${s}</span>
+    </div>`).join('');
+  document.getElementById('contact-cta-btn').textContent=d.contactCtaBtn;
+  document.getElementById('contact-note').textContent=d.contactNote;
+  document.getElementById('faq-h2').textContent=d.faqH2;
+  document.getElementById('faq-list').innerHTML=d.faqs.map((f,i)=>`
+    <div class="faq-item" id="faq-${i}">
+      <div class="faq-q" onclick="toggleFaq(${i})">${f.q}<span class="faq-icon">+</span></div>
+      <div class="faq-a">${f.a}</div>
+    </div>`).join('');
+  document.getElementById('f-privacy').textContent=d.fPrivacy;
+  document.getElementById('f-tokusho').textContent=d.fTokusho;
+  document.getElementById('f-terms').textContent=d.fTerms;
+  document.getElementById('f-contact').textContent=d.fContact;
+  document.getElementById('f-copy').textContent=d.fCopy;
+}
+
+function toggleAnalysis(i){
+  const el=document.getElementById(`ai-${i}`),ck=document.getElementById(`aic-${i}`);
+  if(selected.has(i)){selected.delete(i);el.classList.remove('sel');ck.textContent='';}
+  else{
+    if(selected.size>=MAX_SEL){alert(lang==='zh'?`最多选择${MAX_SEL}项`:lang==='ja'?`最大${MAX_SEL}項目`:`Max ${MAX_SEL} items`);return;}
+    selected.add(i);el.classList.add('sel');ck.textContent='✓';
+  }
+  updateSelCount();
+}
+function updateSelCount(){
+  const n=selected.size,el=document.getElementById('sel-count');if(!el)return;
+  if(lang==='zh')el.innerHTML=`已选 <em>${n}</em> / ${MAX_SEL} 项`;
+  else if(lang==='ja')el.innerHTML=`<em>${n}</em> / ${MAX_SEL} 項目選択中`;
+  else el.innerHTML=`<em>${n}</em> / ${MAX_SEL} selected`;
+}
+function toggleFaq(i){document.getElementById(`faq-${i}`).classList.toggle('open');}
+function openLightbox(src){
+  document.getElementById('lightbox-img').src=src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});
+},{threshold:.08});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+render();
+</script>
+</body>
 </html>
